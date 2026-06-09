@@ -21,6 +21,7 @@
 - [Módulos](docs/MODULES.md)
 - [Rotograma & Velocidade](docs/ROTOGRAMA.md)
 - [Atividades & Status](docs/ATIVIDADES.md)
+- [Ciclo Operacional](docs/CICLO-OPERACIONAL.md)
 - [i18n & Timezone](docs/I18N-TIMEZONE.md)
 - [Docker](docs/DOCKER.md)
 
@@ -35,6 +36,7 @@
 - 🔧 Manutenção Preventiva (plano, gatilho, programação, OS)
 - 🚨 Manutenção Corretiva (solicitação, diagnóstico, causa raiz)
 - 👷 Gestão de Operadores (habilitação, documentos, turno)
+- 🔄 Ciclo Operacional (carga → transporte → descarga, produtividade, DMT, match frota)
 - 📡 Telemetria & GPS (posição, evento, horímetro)
 - 📦 Almoxarifado (peças, estoque, movimentação)
 - 🏭 Contratadas (proprietário do equipamento)
