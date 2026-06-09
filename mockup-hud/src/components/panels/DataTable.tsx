@@ -147,6 +147,16 @@ export default function DataTable({ columns, data, title, subtitle, onAdd, onEdi
 
   const activeFilterCount = Object.keys(columnFilters).length
 
+  // Compute unique value count per column (to hide useless filters)
+  const colUniqueCount = useMemo(() => {
+    const counts: Record<string, number> = {}
+    columns.forEach(col => {
+      const vals = new Set(data.map(row => String(row[col.key] ?? '')))
+      counts[col.key] = vals.size
+    })
+    return counts
+  }, [data, columns])
+
   return (
     <Panel title={title} subtitle={subtitle || filtered.length + ' registros'} status={status} noPad className="h-full flex flex-col">
       {/* Toolbar */}
@@ -184,14 +194,16 @@ export default function DataTable({ columns, data, title, subtitle, onAdd, onEdi
                         <ArrowUpDown className="w-2.5 h-2.5 opacity-30" />
                       )}
                     </button>
-                    {/* Filter button */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setOpenFilter(openFilter === col.key ? null : col.key) }}
-                      className={`p-0.5 rounded transition-all ${columnFilters[col.key] ? 'text-amber-400 bg-amber-400/10' : 'text-dim/50 hover:text-dim'}`}
-                      title={`Filtrar ${col.label}`}
-                    >
-                      <Filter className="w-2.5 h-2.5" />
-                    </button>
+                    {/* Filter button — only show if column has >1 unique value */}
+                    {colUniqueCount[col.key] > 1 && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setOpenFilter(openFilter === col.key ? null : col.key) }}
+                        className={`p-0.5 rounded transition-all ${columnFilters[col.key] ? 'text-amber-400 bg-amber-400/10' : 'text-dim/50 hover:text-dim'}`}
+                        title={`Filtrar ${col.label}`}
+                      >
+                        <Filter className="w-2.5 h-2.5" />
+                      </button>
+                    )}
                   </div>
                   {/* Filter dropdown */}
                   {openFilter === col.key && (
@@ -209,7 +221,21 @@ export default function DataTable({ columns, data, title, subtitle, onAdd, onEdi
             </tr>
           </thead>
           <tbody>
-            {paged.map((row, i) => (
+            {paged.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="text-center py-12">
+                  <div className="flex flex-col items-center gap-3">
+                    <Filter className="w-6 h-6 text-dim/50" />
+                    <p className="text-[11px] text-dim font-mono">Nenhum registro encontrado</p>
+                    {activeFilterCount > 0 && (
+                      <button onClick={() => { setColumnFilters({}); setSearch('') }} className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-mono text-brand-400 border border-brand-600/40 bg-brand-600/10 rounded-md hover:bg-brand-600/20 transition-all">
+                        <X className="w-3 h-3" />Limpar filtros
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ) : paged.map((row, i) => (
               <tr key={row.id || i}
                 onClick={() => onRowClick?.(row)}
                 className={`border-b border-hud-border/30 transition-colors hover:bg-brand-600/[0.03] ${onRowClick ? 'cursor-pointer' : ''}`}>
