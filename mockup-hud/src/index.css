@@ -260,6 +260,22 @@ body {
    DESKTOP WINDOW MANAGER DESIGN SYSTEM
    ═══════════════════════════════════════════ */
 
+/* Fix: Dockview floating panels should NOT overlap the taskbar */
+.dockview-theme-dark .dv-resize-container {
+  z-index: 100 !important;
+}
+/* The taskbar sits at z-index 9999, menu at 99999 */
+
+/* Desktop panel content wrapper */
+.desktop-panel-content {
+  background: var(--hud-panel);
+  color: var(--text-primary);
+}
+[data-theme="light"] .desktop-panel-content {
+  background: #ffffff;
+}
+
+
 /* ─── TASKBAR ─── */
 .taskbar {
   background: var(--hud-panel);

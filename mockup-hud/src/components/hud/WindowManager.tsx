@@ -1,11 +1,12 @@
 import { useRef, useState, useCallback } from 'react'
 import { DockviewReact, DockviewReadyEvent, DockviewApi, IDockviewPanelProps } from 'dockview-react'
 import { useTheme } from '../../contexts/ThemeContext'
+import * as Icons from 'lucide-react'
 
 export interface WindowDef {
   id: string
   title: string
-  icon: string
+  icon: string // Lucide icon name (e.g. 'Truck', 'Map', 'Settings')
   component: string
   defaultWidth?: number
   defaultHeight?: number
@@ -16,6 +17,12 @@ interface WindowManagerProps {
   windows: WindowDef[]
   components: Record<string, React.FunctionComponent<IDockviewPanelProps>>
   defaultOpen?: string[]
+}
+
+function LucideIcon({ name, size = 16, className = '' }: { name: string, size?: number, className?: string }) {
+  const Icon = (Icons as any)[name]
+  if (!Icon) return <span className={className}>•</span>
+  return <Icon size={size} className={className} />
 }
 
 export default function WindowManager({ windows, components, defaultOpen = [] }: WindowManagerProps) {
@@ -36,8 +43,8 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
         floating: {
           width: def.defaultWidth || 700,
           height: def.defaultHeight || 500,
-          x: 60 + (i % 4) * 50,
-          y: 40 + (i % 3) * 40,
+          x: 40 + (i % 4) * 60,
+          y: 30 + (i % 3) * 45,
         }
       })
       setOpenWindows(prev => new Set([...prev, def.id]))
@@ -113,6 +120,7 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
 
   return (
     <div className="h-full flex flex-col relative">
+      {/* Desktop Area */}
       <div className="flex-1 relative overflow-hidden">
         <DockviewReact
           key={'dv-' + theme}
@@ -123,30 +131,33 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
         />
       </div>
 
-      {/* Taskbar */}
-      <div className="taskbar h-11 flex items-center gap-1.5 px-3 z-50 relative">
-        {/* App Menu */}
+      {/* Taskbar - z-index above everything */}
+      <div className="taskbar h-11 flex items-center gap-1.5 px-3" style={{ zIndex: 9999, position: 'relative' }}>
+        {/* App Menu Button */}
         <div className="relative">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="app-menu-btn px-3 py-1.5 text-[10px] font-display uppercase tracking-wider rounded-md transition-all duration-200"
+            className="app-menu-btn flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-display uppercase tracking-wider rounded-md transition-all duration-200"
           >
-            <span className="mr-1.5">⬡</span>Apps
+            <Icons.LayoutGrid size={12} />
+            <span>Apps</span>
           </button>
+
+          {/* App Menu Popup - ABOVE taskbar, z-index very high */}
           {menuOpen && (
             <>
-              <div className="fixed inset-0 z-[998]" onClick={() => setMenuOpen(false)}></div>
-              <div className="app-menu absolute bottom-full left-0 mb-2 rounded-xl shadow-2xl py-2 min-w-[240px] max-h-[450px] overflow-y-auto z-[999]">
-                <div className="px-3 py-1.5 text-[9px] font-display uppercase tracking-widest text-dim border-b border-hud-border/50 mb-1">Aplicações</div>
+              <div className="fixed inset-0" style={{ zIndex: 99998 }} onClick={() => setMenuOpen(false)}></div>
+              <div className="app-menu absolute bottom-full left-0 mb-2 rounded-xl shadow-2xl py-2 min-w-[260px] max-h-[500px] overflow-y-auto" style={{ zIndex: 99999 }}>
+                <div className="px-3 py-2 text-[9px] font-display uppercase tracking-widest text-dim border-b border-hud-border/50 mb-1">Aplicações</div>
                 {windows.map(w => (
                   <button
                     key={w.id}
                     onClick={() => openWindow(w)}
                     className="app-menu-item flex items-center gap-3 w-full px-3 py-2.5 text-left transition-all duration-150"
                   >
-                    <span className="text-lg w-7 text-center">{w.icon}</span>
+                    <LucideIcon name={w.icon} size={15} className="text-dim flex-shrink-0" />
                     <span className="text-[11px] font-mono flex-1">{w.title}</span>
-                    {openWindows.has(w.id) && <span className="w-2 h-2 rounded-full bg-brand-400 shadow-glow-sm animate-pulse"></span>}
+                    {openWindows.has(w.id) && <span className="w-2 h-2 rounded-full led-brand"></span>}
                   </button>
                 ))}
               </div>
@@ -156,7 +167,7 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
 
         <div className="w-px h-6 bg-hud-border/50 mx-1"></div>
 
-        {/* Open windows */}
+        {/* Open windows in taskbar */}
         <div className="flex-1 flex items-center gap-1 overflow-x-auto py-1">
           {[...openWindows].map(id => {
             const def = windows.find(w => w.id === id) || windows.find(w => id.startsWith(w.id))
@@ -165,13 +176,13 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
               <button
                 key={id}
                 onClick={() => { const p = apiRef.current?.getPanel(id); if (p) p.api.setActive() }}
-                className="taskbar-item flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all duration-150 max-w-[150px]"
+                className="taskbar-item flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all duration-150 max-w-[160px]"
               >
-                <span className="text-sm">{def.icon}</span>
+                <LucideIcon name={def.icon} size={12} className="text-dim flex-shrink-0" />
                 <span className="truncate text-[10px] font-mono">{def.title}</span>
                 <span
                   onClick={(e) => { e.stopPropagation(); closeWindow(id) }}
-                  className="taskbar-close ml-1 w-4 h-4 flex items-center justify-center rounded-full text-[9px] transition-all"
+                  className="taskbar-close ml-auto w-4 h-4 flex items-center justify-center rounded-full text-[9px] transition-all flex-shrink-0"
                 >✕</span>
               </button>
             )
@@ -180,9 +191,15 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
 
         {/* Window management */}
         <div className="flex items-center gap-0.5">
-          <button onClick={cascadeAll} className="wm-btn px-2 py-1.5 text-sm rounded transition-all" title="Cascata">⧉</button>
-          <button onClick={tileAll} className="wm-btn px-2 py-1.5 text-sm rounded transition-all" title="Tile">▦</button>
-          <button onClick={() => { apiRef.current?.panels.forEach(p => apiRef.current!.removePanel(p)) }} className="wm-btn wm-close px-2 py-1.5 text-sm rounded transition-all" title="Fechar Todas">✕</button>
+          <button onClick={cascadeAll} className="wm-btn px-2 py-1.5 text-sm rounded transition-all" title="Cascata">
+            <Icons.Layers size={13} />
+          </button>
+          <button onClick={tileAll} className="wm-btn px-2 py-1.5 text-sm rounded transition-all" title="Tile">
+            <Icons.LayoutGrid size={13} />
+          </button>
+          <button onClick={() => { apiRef.current?.panels.forEach(p => apiRef.current!.removePanel(p)) }} className="wm-btn wm-close px-2 py-1.5 text-sm rounded transition-all" title="Fechar Todas">
+            <Icons.X size={13} />
+          </button>
         </div>
       </div>
     </div>
@@ -192,10 +209,10 @@ export default function WindowManager({ windows, components, defaultOpen = [] }:
 function DesktopWatermark() {
   return (
     <div className="h-full flex items-center justify-center select-none">
-      <div className="text-center opacity-30 animate-pulse">
-        <div className="text-7xl mb-4 drop-shadow-lg">⬡</div>
-        <div className="text-sm font-display tracking-[0.3em] uppercase">SqualionLink</div>
-        <div className="text-[10px] font-mono mt-3 opacity-60">Clique em Apps para abrir janelas</div>
+      <div className="text-center opacity-20">
+        <Icons.Hexagon size={64} className="mx-auto mb-4 text-brand-400" strokeWidth={1} />
+        <div className="text-sm font-display tracking-[0.3em] uppercase text-dim">SqualionLink</div>
+        <div className="text-[10px] font-mono mt-3 text-dim/50">Clique em Apps para abrir janelas</div>
       </div>
     </div>
   )
