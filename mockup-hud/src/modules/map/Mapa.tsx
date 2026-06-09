@@ -549,21 +549,27 @@ export default function Mapa() {
     setSelectedEquip(e)
     setFlyTarget({ lat: e.lat, lng: e.lng })
 
-    // Open floating snapshot panel
+    // Open snapshot as right-side panel (drawer-style)
     if (apiRef.current) {
       const api = apiRef.current
       const existing = api.getPanel('snapshot')
       if (existing) {
-        existing.api.close()
+        // Remove and re-add with new data
+        api.removePanel(existing)
       }
       setTimeout(() => {
         api.addPanel({
           id: 'snapshot',
           component: 'snapshot',
-          title: `📍 ${e.codigo} — Snapshot`,
+          title: `${e.codigo}`,
           params: { equipId: e.id },
-          floating: { width: 380, height: 550 },
+          position: { referencePanel: 'map', direction: 'right' },
         })
+        // Resize snapshot to be narrower
+        const snapPanel = api.getPanel('snapshot')
+        if (snapPanel?.group) {
+          try { snapPanel.group.api.setSize({ width: 350 }) } catch(_) {}
+        }
       }, 50)
     }
   }, [])
