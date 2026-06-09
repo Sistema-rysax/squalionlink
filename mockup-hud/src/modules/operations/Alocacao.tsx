@@ -1,12 +1,10 @@
 import { useState, useCallback, useMemo } from 'react'
-import ReactECharts from 'echarts-for-react'
 import { DndContext, DragOverlay, useDraggable, useDroppable, closestCenter, DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { Select, FormSection, FormGrid } from '../../components/controls/FormFields'
 import { toast } from '../../components/ui/Toast'
 import { ArrowRight, Plus, Trash2, Truck, Edit2, Pause, Play, GripVertical, Loader, ChevronRight, AlertTriangle, BarChart3, Workflow } from 'lucide-react'
-import { useChartTheme } from '../../hooks/useChartTheme'
 
 /* ─── TYPES ─── */
 interface Fluxo {
@@ -213,73 +211,125 @@ function PipelineCard({ fluxo, alocados, onEdit, onToggle, onDelete }: { fluxo: 
 
 /* ─── SANKEY VIEW ─── */
 function SankeyView({ fluxos, alocacoes }: { fluxos: Fluxo[]; alocacoes: Record<number, EquipAlocado[]> }) {
-  const chartTheme = useChartTheme()
+  const activeFluxos = fluxos.filter(f => f.status === 'ATIVO')
 
-  const { nodes, links } = useMemo(() => {
-    const nodeSet = new Set<string>()
-    const linkMap: Record<string, { source: string; target: string; value: number; material: string }> = {}
+  const origins = useMemo(() => {
+    const map: Record<string, { area: string; fluxos: { id: number; destino: string; material: string; equips: number }[] }> = {}
+    activeFluxos.forEach(f => {
+      if (!map[f.origem_area]) map[f.origem_area] = { area: f.origem_area, fluxos: [] }
+      map[f.origem_area].fluxos.push({ id: f.id, destino: f.destino_area, material: f.material, equips: (alocacoes[f.id]?.length || 0) + f.carga.length })
+    })
+    return Object.values(map)
+  }, [activeFluxos, alocacoes])
 
-    fluxos.filter(f => f.status === 'ATIVO').forEach(f => {
-      const src = f.origem_area
-      const tgt = f.destino_area
-      nodeSet.add(src)
-      nodeSet.add(tgt)
-      const key = src + '>' + tgt
-      const numEquips = (alocacoes[f.id]?.length || 0) + f.carga.length
-      if (linkMap[key]) {
-        linkMap[key].value += Math.max(numEquips, 1)
-      } else {
-        linkMap[key] = { source: src, target: tgt, value: Math.max(numEquips, 1), material: f.material }
+  const destinations = useMemo(() => {
+    const set = new Set<string>()
+    activeFluxos.forEach(f => set.add(f.destino_area))
+    return Array.from(set)
+  }, [activeFluxos])
+
+  const svgWidth = 900
+  const svgHeight = Math.max(origins.length, destinations.length) * 85 + 40
+  const boxW = 185
+  const boxH = 52
+  const leftX = 20
+  const rightX = svgWidth - boxW - 20
+
+  const originYs = origins.map((_, i) => 30 + i * 85)
+  const destYs = destinations.map((_, i) => 30 + i * 85)
+
+  const connections = useMemo(() => {
+    const conns: { fromIdx: number; toIdx: number; material: string; equips: number; fluxoNome: string }[] = []
+    activeFluxos.forEach(f => {
+      const fromIdx = origins.findIndex(o => o.area === f.origem_area)
+      const toIdx = destinations.indexOf(f.destino_area)
+      if (fromIdx >= 0 && toIdx >= 0) {
+        conns.push({ fromIdx, toIdx, material: f.material, equips: (alocacoes[f.id]?.length || 0) + f.carga.length, fluxoNome: f.nome })
       }
     })
+    return conns
+  }, [activeFluxos, origins, destinations, alocacoes])
 
-    const nodes = Array.from(nodeSet).map(n => ({ name: n }))
-    const links = Object.values(linkMap)
-    return { nodes, links }
-  }, [fluxos, alocacoes])
-
-  const option = useMemo(() => ({
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'item', backgroundColor: chartTheme.tooltip.bg, borderColor: chartTheme.tooltip.border, textStyle: { color: chartTheme.tooltip.text, fontFamily: 'JetBrains Mono', fontSize: 11 } },
-    series: [{
-      type: 'sankey',
-      layout: 'none',
-      emphasis: { focus: 'adjacency' },
-      nodeAlign: 'left',
-      nodeWidth: 24,
-      nodeGap: 16,
-      layoutIterations: 0,
-      label: { color: chartTheme.axis.label, fontFamily: 'JetBrains Mono', fontSize: 11 },
-      lineStyle: { color: 'gradient', curveness: 0.5, opacity: 0.4 },
-      itemStyle: { borderWidth: 0 },
-      data: nodes.map(n => ({ ...n, itemStyle: { color: MATERIAL_COLORS[links.find(l => l.source === n.name)?.material || ''] || chartTheme.brand } })),
-      links: links.map(l => ({
-        ...l,
-        lineStyle: { color: MATERIAL_COLORS[l.material] || chartTheme.brand, opacity: 0.35 }
-      }))
-    }]
-  }), [nodes, links, chartTheme])
-
-  // Summary stats
   const totalEquips = Object.values(alocacoes).flat().length
-  const totalFluxosAtivos = fluxos.filter(f => f.status === 'ATIVO').length
 
   return (
     <div className="h-full overflow-auto p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-sm uppercase tracking-wider text-gray-200">Visao Sankey — Fluxo de Material</h2>
-          <p className="text-[10px] font-mono text-dim mt-0.5">Origens enviando para destinos (espessura = qtd equipamentos)</p>
+          <h2 className="font-display text-sm uppercase tracking-wider text-gray-200">Visao de Fluxo — Origens & Destinos</h2>
+          <p className="text-[10px] font-mono text-dim mt-0.5">Linhas conectam areas de origem aos destinos (cor = material)</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-center"><div className="text-lg font-mono font-bold text-brand-400">{totalFluxosAtivos}</div><div className="text-[8px] text-dim uppercase">Fluxos Ativos</div></div>
+          <div className="text-center"><div className="text-lg font-mono font-bold text-brand-400">{activeFluxos.length}</div><div className="text-[8px] text-dim uppercase">Fluxos Ativos</div></div>
           <div className="text-center"><div className="text-lg font-mono font-bold text-gray-200">{totalEquips}</div><div className="text-[8px] text-dim uppercase">Equip. Alocados</div></div>
         </div>
       </div>
 
-      {/* Sankey Chart */}
-      <div className="bg-hud-panel/60 border border-hud-border/50 rounded-xl p-4" style={{ height: 350 }}>
-        <ReactECharts option={option} style={{ height: '100%' }} key={'sankey-' + chartTheme.key} />
+      {/* SVG Flow Diagram */}
+      <div className="bg-hud-panel/60 border border-hud-border/50 rounded-xl p-6 overflow-x-auto">
+        <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} preserveAspectRatio="xMidYMid meet">
+          {/* Thin curved connection lines */}
+          {connections.map((c, i) => {
+            const y1 = originYs[c.fromIdx] + boxH / 2
+            const y2 = destYs[c.toIdx] + boxH / 2
+            const x1 = leftX + boxW + 4
+            const x2 = rightX - 4
+            const midX = (x1 + x2) / 2
+            const color = MATERIAL_COLORS[c.material] || '#6366f1'
+            return (
+              <g key={i} className="group">
+                <path d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
+                  fill="none" stroke={color} strokeWidth="2" opacity="0.6"
+                  className="transition-all duration-200 group-hover:opacity-100 group-hover:[stroke-width:3]" />
+                {/* Label on hover */}
+                <text x={midX} y={(y1 + y2) / 2 - 8} textAnchor="middle"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ fontSize: 9, fontFamily: 'JetBrains Mono', fill: color }}>
+                  {c.fluxoNome} • {c.equips} equip.
+                </text>
+                <circle cx={x1} cy={y1} r="3" fill={color} opacity="0.7" />
+                <circle cx={x2} cy={y2} r="3" fill={color} opacity="0.7" />
+              </g>
+            )
+          })}
+
+          {/* Origin boxes (left side) */}
+          {origins.map((o, i) => {
+            const y = originYs[i]
+            const totalEq = o.fluxos.reduce((s, f) => s + f.equips, 0)
+            return (
+              <g key={'o-' + i}>
+                <rect x={leftX} y={y} width={boxW} height={boxH} rx="6"
+                  fill="var(--hud-panel)" stroke="var(--hud-border)" strokeWidth="1.5" />
+                <text x={leftX + 12} y={y + 21} style={{ fontSize: 11, fontFamily: 'JetBrains Mono', fontWeight: 700, fill: 'var(--text-primary, #e2e8f0)' }}>{o.area}</text>
+                <text x={leftX + 12} y={y + 38} style={{ fontSize: 9, fontFamily: 'JetBrains Mono', fill: 'var(--text-dim, #64748b)' }}>
+                  {o.fluxos.length} fluxo{o.fluxos.length > 1 ? 's' : ''} • {totalEq} equip.
+                </text>
+                {/* Material dots */}
+                {o.fluxos.map((f, fi) => (
+                  <circle key={fi} cx={leftX + boxW - 14 - fi * 14} cy={y + boxH / 2} r="4.5" fill={MATERIAL_COLORS[f.material] || '#6366f1'} opacity="0.85" />
+                ))}
+              </g>
+            )
+          })}
+
+          {/* Destination boxes (right side) */}
+          {destinations.map((d, i) => {
+            const y = destYs[i]
+            const incoming = activeFluxos.filter(f => f.destino_area === d)
+            const totalEq = incoming.reduce((s, f) => s + (alocacoes[f.id]?.length || 0) + f.carga.length, 0)
+            return (
+              <g key={'d-' + i}>
+                <rect x={rightX} y={y} width={boxW} height={boxH} rx="6"
+                  fill="var(--hud-panel)" stroke="rgba(37,99,235,0.3)" strokeWidth="1.5" />
+                <text x={rightX + 12} y={y + 21} style={{ fontSize: 11, fontFamily: 'JetBrains Mono', fontWeight: 700, fill: 'var(--text-primary, #e2e8f0)' }}>{d}</text>
+                <text x={rightX + 12} y={y + 38} style={{ fontSize: 9, fontFamily: 'JetBrains Mono', fill: 'var(--text-dim, #64748b)' }}>
+                  {incoming.length} recebendo • {totalEq} equip.
+                </text>
+              </g>
+            )
+          })}
+        </svg>
       </div>
 
       {/* Material legend */}
@@ -292,9 +342,9 @@ function SankeyView({ fluxos, alocacoes }: { fluxos: Fluxo[]; alocacoes: Record<
         ))}
       </div>
 
-      {/* Per-connection detail cards */}
+      {/* Detail cards */}
       <div className="grid grid-cols-2 gap-3">
-        {fluxos.filter(f => f.status === 'ATIVO').map(f => {
+        {activeFluxos.map(f => {
           const equips = alocacoes[f.id] || []
           return (
             <div key={f.id} className="bg-hud-bg/50 border border-hud-border/30 rounded-lg p-3">
