@@ -36,6 +36,12 @@
 - [Dispatch & Alocação](docs/DISPATCH.md)
 - [KPI & Indicadores](docs/KPI.md)
 
+### 📈 Relatórios
+- [Report Builder (Construtor de Relatórios)](docs/REPORT-BUILDER.md)
+
+### 🎨 UI/UX
+- [Design System — Layout, Componentes, Padrões](docs/UI-DESIGN-SYSTEM.md)
+
 ### 🔌 API
 - [API Documentation (REST + WebSocket)](docs/API.md)
 
