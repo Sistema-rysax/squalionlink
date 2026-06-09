@@ -12,6 +12,7 @@ import Operadores from './modules/fleet/Operadores'
 import Atividades from './modules/operations/Atividades'
 import Ciclos from './modules/operations/Ciclos'
 import Dispatch from './modules/operations/Dispatch'
+import Alocacao from './modules/operations/Alocacao'
 import Alertas from './modules/operations/Alertas'
 import Turnos from './modules/operations/Turnos'
 import RegimeTurno from './modules/operations/RegimeTurno'
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="operacao" element={<Atividades />} />
           <Route path="operacao/ciclos" element={<Ciclos />} />
           <Route path="operacao/dispatch" element={<Dispatch />} />
+          <Route path="operacao/alocacao" element={<Alocacao />} />
           <Route path="operacao/alertas" element={<Alertas />} />
           <Route path="operacao/turnos" element={<Turnos />} />
           <Route path="operacao/regime" element={<RegimeTurno />} />
