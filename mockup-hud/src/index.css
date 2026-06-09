@@ -1,8 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import "dockview-core/dist/styles/dockview.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── DOCKVIEW HUD THEME ─── */
+.dockview-theme-dark {
+  --dv-paneview-header-border-color: var(--hud-border);
+  --dv-tabs-and-actions-container-background-color: var(--hud-panel);
+  --dv-activegroup-visiblepanel-tab-background-color: rgba(37,99,235,0.15);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--hud-panel);
+  --dv-inactivegroup-visiblepanel-tab-background-color: rgba(37,99,235,0.08);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--hud-panel);
+  --dv-tab-divider-color: var(--hud-border);
+  --dv-activegroup-visiblepanel-tab-color: var(--brand-400);
+  --dv-activegroup-hiddenpanel-tab-color: var(--dim);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--dim);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--dim);
+  --dv-separator-border: var(--hud-border);
+  --dv-background-color: var(--hud-bg);
+  --dv-group-view-background-color: var(--hud-panel);
+  --dv-drag-over-background-color: rgba(37,99,235,0.1);
+  --dv-drag-over-border-color: var(--brand-400);
+}
+
+[data-theme="light"] .dockview-theme-dark {
+  --dv-tabs-and-actions-container-background-color: #ffffff;
+  --dv-activegroup-visiblepanel-tab-background-color: rgba(37,99,235,0.08);
+  --dv-activegroup-visiblepanel-tab-color: #1d4ed8;
+  --dv-activegroup-hiddenpanel-tab-color: #64748b;
+  --dv-background-color: #f0f4f8;
+  --dv-group-view-background-color: #ffffff;
+  --dv-separator-border: #e2e8f0;
+  --dv-drag-over-background-color: rgba(37,99,235,0.05);
+}
 
 /* ─── DARK THEME (DEFAULT) ─── */
 :root {
