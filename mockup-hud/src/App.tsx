@@ -17,6 +17,7 @@ import Alertas from './modules/operations/Alertas'
 import Turnos from './modules/operations/Turnos'
 import RegimeTurno from './modules/operations/RegimeTurno'
 import RegrasAlerta from './modules/operations/RegrasAlerta'
+import Rotograma from './modules/operations/Rotograma'
 import Abastecimento from './modules/operations/Abastecimento'
 import PostosAbastecimento from './modules/operations/PostosAbastecimento'
 import Combustiveis from './modules/operations/Combustiveis'
@@ -68,6 +69,8 @@ export default function App() {
           <Route path="operacao/turnos" element={<Turnos />} />
           <Route path="operacao/regime" element={<RegimeTurno />} />
           <Route path="operacao/regras-alerta" element={<RegrasAlerta />} />
+          <Route path="operacao/rotograma" element={<Rotograma />} />
+          <Route path="operacao/rotograma" element={<Rotograma />} />
           <Route path="abastecimento" element={<Abastecimento />} />
           <Route path="abastecimento/postos" element={<PostosAbastecimento />} />
           <Route path="abastecimento/combustiveis" element={<Combustiveis />} />

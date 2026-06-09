@@ -29,6 +29,7 @@ const modules: ModuleItem[] = [
     { label: 'Turnos', path: '/operacao/turnos' },
     { label: 'Regime Turno', path: '/operacao/regime' },
     { label: 'Regras Alerta', path: '/operacao/regras-alerta' },
+    { label: 'Rotograma', path: '/operacao/rotograma' },
   ]},
   { icon: Fuel, label: 'Abastecimento', path: '/abastecimento', sub: [
     { label: 'Registros', path: '/abastecimento' },
