@@ -1,10 +1,11 @@
 import { AlertTriangle } from 'lucide-react'
+import { createPortal } from 'react-dom'
 interface Props { open: boolean; onClose: () => void; onConfirm: () => void; title: string; message: string; confirmLabel?: string }
 
 export default function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel = 'Confirmar' }: Props) {
   if (!open) return null
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 99995 }}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-hud-panel border border-crit/30 rounded-xl shadow-glow-crit p-6 max-w-sm w-full mx-4 animate-data-in">
         <div className="flex items-center gap-3 mb-4">
@@ -17,6 +18,7 @@ export default function ConfirmDialog({ open, onClose, onConfirm, title, message
           <button onClick={onConfirm} className="px-4 py-2 text-xs font-mono uppercase tracking-wider text-crit bg-crit/10 border border-crit/30 rounded-md hover:bg-crit/20 transition-colors">{confirmLabel}</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

@@ -260,6 +260,185 @@ body {
    DESKTOP WINDOW MANAGER DESIGN SYSTEM
    ═══════════════════════════════════════════ */
 
+
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE DESKTOP PANELS
+   ═══════════════════════════════════════════ */
+
+/* Panel content fills the dockview group */
+.desktop-panel-content {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+/* Drawer inside desktop panel: absolute to panel, not fixed to viewport */
+.desktop-panel-content .fixed.inset-0 {
+  position: absolute !important;
+}
+
+/* Ensure drawer stays inside panel bounds */
+.desktop-panel-content [class*="z-[100]"] {
+  position: absolute !important;
+  z-index: 200 !important;
+}
+
+/* Tables responsive inside panels */
+.desktop-panel-content table {
+  width: 100%;
+  table-layout: auto;
+}
+
+/* Search input responsive */
+.desktop-panel-content input[placeholder="Filtrar..."] {
+  width: 100% !important;
+  max-width: 200px;
+  min-width: 80px;
+}
+
+/* Toolbar wraps on small panels */
+.desktop-panel-content .flex.items-center.justify-between {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Reduce padding in panels when inside desktop */
+.desktop-panel-content .p-4 {
+  padding: 0.75rem;
+}
+.desktop-panel-content .p-5 {
+  padding: 1rem;
+}
+.desktop-panel-content .px-5 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.desktop-panel-content .px-4 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+/* Grid columns adapt to panel size */
+.desktop-panel-content .grid-cols-4 {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.desktop-panel-content .grid-cols-5 {
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
+.desktop-panel-content .grid-cols-3 {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+/* FormGrid inside desktop adapts */
+.desktop-panel-content .grid.grid-cols-2 {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+/* Drawer width responsive inside desktop panels */
+.desktop-panel-content .w-\[460px\] {
+  width: 100% !important;
+  max-width: 460px;
+}
+.desktop-panel-content .w-\[520px\] {
+  width: 100% !important;
+  max-width: 520px;
+}
+
+/* Map inside desktop panels */
+.desktop-panel-content .leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Panel corner-marks smaller in desktop */
+.desktop-panel-content .corner-marks::before,
+.desktop-panel-content .corner-marks::after {
+  display: none;
+}
+
+/* Dockview panel content area */
+.dockview-theme-dark .dv-groupview-content {
+  overflow: hidden;
+}
+
+/* Dockview tabs styling tighter */
+.dockview-theme-dark .dv-tab {
+  padding: 4px 12px !important;
+  font-size: 11px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Dockview floating group shadow */
+.dockview-theme-dark .dv-floating-group {
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.1) !important;
+  border: 1px solid var(--hud-border) !important;
+}
+[data-theme="light"] .dockview-theme-dark .dv-floating-group {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Dockview tab bar more compact */
+.dockview-theme-dark .dv-tabs-container {
+  height: 32px !important;
+  min-height: 32px !important;
+}
+
+/* Active tab indicator */
+.dockview-theme-dark .dv-tab.dv-active-tab {
+  border-bottom: 2px solid var(--brand-400) !important;
+}
+
+/* Resize handle visibility */
+.dockview-theme-dark .dv-resize-handle {
+  background: transparent;
+  transition: background 0.2s;
+}
+.dockview-theme-dark .dv-resize-handle:hover {
+  background: rgba(37,99,235,0.3);
+}
+
+/* Scrollbar styling inside panels */
+.desktop-panel-content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.desktop-panel-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.desktop-panel-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+.desktop-panel-content::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-hover);
+}
+
+/* Table container scrolls horizontally */
+.desktop-panel-content .overflow-auto {
+  overflow: auto;
+}
+.desktop-panel-content table {
+  min-width: 0;
+}
+
+/* ECharts responsive in panels */
+.desktop-panel-content [_echarts_instance_] {
+  width: 100% !important;
+}
+
+/* Toast/confirm dialog z-index above dockview */
+.toast-container {
+  z-index: 999999 !important;
+}
+.confirm-dialog-overlay {
+  z-index: 99990 !important;
+}
+
 /* Fix: Dockview floating panels should NOT overlap the taskbar */
 .dockview-theme-dark .dv-resize-container {
   z-index: 100 !important;
