@@ -102,6 +102,7 @@ function MessageTypeBadge({ tipo }: { tipo: MessageType }) {
 type Filter = 'ALL' | 'NAO_LIDAS' | 'BROADCAST'
 
 export default function Mensageria() {
+  const t = useT()
   const [conversations, setConversations] = useState(mockConversations)
   const [selected, setSelected] = useState('CAT-01')
   const [input, setInput] = useState('')

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import ReactECharts from 'echarts-for-react'
 import { useChartTheme } from '../../hooks/useChartTheme'
 import DataTable from '../../components/panels/DataTable'
@@ -147,6 +148,7 @@ const emptyPilha = { nome: '', material: 'ROM', capacidade_ton: '', volume_atual
 const emptyElemento = { nome: '', simbolo: '', unidade: '%', meta_min: '', meta_max: '', cor: '#2563eb' }
 
 export default function Qualidade() {
+  const t = useT()
   const ct = useChartTheme()
   const [tab, setTab] = useState<'pilhas' | 'elementos' | 'analises'>('pilhas')
 

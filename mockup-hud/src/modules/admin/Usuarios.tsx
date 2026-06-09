@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -14,6 +15,7 @@ const init = [
 const empty = {nome:'',email:'',perfil:'Visualizador'}
 
 export default function Usuarios() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -34,8 +36,8 @@ export default function Usuarios() {
     { key:'ultimo_acesso', label:'Último Acesso' },
   ]
   return (<>
-    <DataTable columns={columns} data={data} title="Usuários" status="neutral" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={r=>{setForm({nome:r.nome,email:r.email,perfil:r.perfil});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel="Novo Usuário" />
-    <Drawer open={open} onClose={()=>setOpen(false)} title={editing?'Editar Usuário':'Novo Usuário'}
+    <DataTable columns={columns} data={data} title={t.admin.users} status="neutral" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={r=>{setForm({nome:r.nome,email:r.email,perfil:r.perfil});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel={t.admin.newUser} />
+    <Drawer open={open} onClose={()=>setOpen(false)} title={editing ? t.admin.editUser : t.admin.newUser}
       footer={<><button onClick={()=>setOpen(false)} className="px-4 py-2 text-xs font-mono uppercase text-dim border border-hud-border rounded-md">Cancelar</button><button onClick={save} className="px-4 py-2 text-xs font-mono uppercase text-brand-400 bg-brand-600/20 border border-brand-600/40 rounded-md hover:shadow-glow-sm transition-all">Salvar</button></>}>
       <div className="space-y-6"><FormSection title="Dados"><Input label="Nome" value={form.nome} onChange={v=>set('nome',v)} required /><Input label="Email" value={form.email} onChange={v=>set('email',v)} required /><Select label="Perfil" value={form.perfil} onChange={v=>set('perfil',v)} options={[{value:'Administrador',label:'Administrador'},{value:'Supervisor',label:'Supervisor'},{value:'Operador Sala',label:'Operador Sala'},{value:'Visualizador',label:'Visualizador'}]} /></FormSection></div>
     </Drawer>

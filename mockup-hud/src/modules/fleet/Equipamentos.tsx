@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import { useNavigate } from 'react-router-dom'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
@@ -68,6 +69,7 @@ const emptyForm = {
 }
 
 export default function Equipamentos() {
+  const t = useT()
   const navigate = useNavigate()
   const [data, setData] = useState(initData)
   const [open, setOpen] = useState(false)
@@ -122,14 +124,14 @@ export default function Equipamentos() {
     <DataTable
       columns={columns}
       data={data}
-      title="Equipamentos"
+      title={t.fleet.title}
       subtitle={`${data.filter(d => d.status === 'ATIVO').length} ativos de ${data.length} cadastrados`}
       status="ok"
       onAdd={() => { setForm(emptyForm); setEditing(null); setOpen(true) }}
       onEdit={openEdit}
       onDelete={setDel}
       onRowClick={(r: any) => navigate(`/frota/${r.id}`)}
-      addLabel="Novo Equipamento"
+      addLabel={t.fleet.newEquipment}
     />
 
     <Drawer open={open} onClose={() => setOpen(false)} title={editing ? 'Editar Equipamento' : 'Novo Equipamento'} subtitle={editing?.codigo}

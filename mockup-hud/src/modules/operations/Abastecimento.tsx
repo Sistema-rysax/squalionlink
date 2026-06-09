@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -30,6 +31,7 @@ const tipoColors: Record<string, string> = {
 }
 
 export default function Abastecimento() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -97,7 +99,7 @@ export default function Abastecimento() {
   ]
 
   return (<>
-    <DataTable columns={columns} data={data} title="Abastecimentos" status="info"
+    <DataTable columns={columns} data={data} title={t.fueling.title} status="info"
       onAdd={() => { setForm(empty); setEditing(null); setOpen(true) }}
       onEdit={openEdit} onDelete={setDel} addLabel="Registrar" />
 

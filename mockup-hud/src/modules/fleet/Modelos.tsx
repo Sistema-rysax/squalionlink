@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -87,6 +88,7 @@ const emptyForm = {
 }
 
 export default function Modelos() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -174,13 +176,13 @@ export default function Modelos() {
     <DataTable
       columns={columns}
       data={data}
-      title="Modelos"
+      title={t.navSub.models}
       subtitle={`${data.length} modelos cadastrados`}
       status="info"
       onAdd={() => { setForm(emptyForm); setEditing(null); setOpen(true) }}
       onEdit={openEdit}
       onDelete={setDel}
-      addLabel="Novo Modelo"
+      addLabel={t.common.add + ' ' + t.navSub.models}
     />
 
     {/* Inline Tabs Section */}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -123,6 +124,7 @@ const documentosMock: Record<number, any[]> = {
 const emptyForm = { nome: '', matricula: '', cpf: '', cargo: 'Operador', telefone: '', dt_admissao: '', contratada: '', status: 'ATIVO' }
 
 export default function Operadores() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -209,14 +211,14 @@ export default function Operadores() {
     <DataTable
       columns={columns}
       data={data}
-      title="Operadores"
+      title={t.operators.title}
       subtitle={`${data.filter(d => d.status === 'ATIVO').length} ativos de ${data.length} cadastrados`}
       status="ok"
       onAdd={() => { setForm(emptyForm); setEditing(null); setOpen(true) }}
       onEdit={openEdit}
       onDelete={setDel}
       onRowClick={openDetail}
-      addLabel="Novo Operador"
+      addLabel={t.operators.newOperator}
     />
 
     {/* Create/Edit Drawer */}

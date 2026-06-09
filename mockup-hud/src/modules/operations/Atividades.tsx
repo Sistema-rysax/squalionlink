@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -71,6 +72,7 @@ const tipoMovColors: Record<string, string> = {
 }
 
 export default function Atividades() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -142,9 +144,9 @@ export default function Atividades() {
   }
 
   return (<>
-    <DataTable columns={columns} data={data} title="Atividades" status="info"
+    <DataTable columns={columns} data={data} title={t.operations.activities} status="info"
       onAdd={() => { setForm(empty); setEditing(null); setTab('dados'); setOpen(true) }}
-      onEdit={openEdit} onDelete={setDel} addLabel="Nova Atividade" />
+      onEdit={openEdit} onDelete={setDel} addLabel={t.operations.newActivity} />
 
     <Drawer open={open} onClose={() => setOpen(false)} title={editing ? 'Editar Atividade' : 'Nova Atividade'} subtitle={editing?.nome}
       footer={<>

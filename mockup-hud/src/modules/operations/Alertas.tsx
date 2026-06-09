@@ -1,16 +1,18 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import { alertas as initAlertas } from '../../mock/data'
 import Panel from '../../components/panels/Panel'
 import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { toast } from '../../components/ui/Toast'
 
 export default function Alertas() {
+  const t = useT()
   const [data, setData] = useState(initAlertas)
-  const ack = (id:number) => { setData(p=>p.map(a=>a.id===id?{...a,tratado:true}:a)); toast('Alerta reconhecido') }
+  const ack = (id:number) => { setData(p=>p.map(a=>a.id===id?{...a,tratado:true}:a)); toast(t.operations.acknowledged) }
   const pendentes = data.filter(a=>!a.tratado)
   return (
     <div className="space-y-4 h-full">
-      <Panel title="Alertas" status={pendentes.some(a=>a.tipo==='CRITICO')?'crit':'warn'} subtitle={pendentes.length+' PENDENTES'} noPad className="h-full">
+      <Panel title={t.operations.alerts} status={pendentes.some(a=>a.tipo==='CRITICO')?'crit':'warn'} subtitle={pendentes.length+' '+t.operations.pending} noPad className="h-full">
         <div className="divide-y divide-hud-border/30">
           {data.map(a => (
             <div key={a.id} className={'flex items-start gap-3 px-5 py-4 transition-colors '+(a.tratado?'opacity-40':'hover:bg-white/[0.02]')}>

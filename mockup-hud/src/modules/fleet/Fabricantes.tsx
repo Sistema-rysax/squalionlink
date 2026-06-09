@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -15,6 +16,7 @@ const init = [
 const empty = { nome:'', pais:'' }
 
 export default function Fabricantes() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -36,7 +38,7 @@ export default function Fabricantes() {
   ]
 
   return (<>
-    <DataTable columns={columns} data={data} title="Fabricantes" status="info" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={r=>{setForm({nome:r.nome,pais:r.pais});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel="Novo Fabricante" />
+    <DataTable columns={columns} data={data} title={t.navSub.manufacturers} status="info" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={r=>{setForm({nome:r.nome,pais:r.pais});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel={t.common.add} />
     <Drawer open={open} onClose={()=>setOpen(false)} title={editing?'Editar Fabricante':'Novo Fabricante'}
       footer={<><button onClick={()=>setOpen(false)} className="px-4 py-2 text-xs font-mono uppercase text-dim border border-hud-border rounded-md hover:text-gray-300">Cancelar</button><button onClick={save} className="px-4 py-2 text-xs font-mono uppercase text-brand-400 bg-brand-600/20 border border-brand-600/40 rounded-md hover:bg-brand-600/30 hover:shadow-glow-sm transition-all">Salvar</button></>}>
       <div className="space-y-6">

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import ReactECharts from 'echarts-for-react'
 import { useChartTheme } from '../../hooks/useChartTheme'
 import DataTable from '../../components/panels/DataTable'
@@ -15,6 +16,7 @@ const ciclos = [
 ]
 
 export default function Ciclos() {
+  const t = useT()
   const ct = useChartTheme()
   const [selected, setSelected] = useState<any>(null)
 
@@ -66,7 +68,7 @@ export default function Ciclos() {
       <ReactECharts option={overviewOption} style={{height:180}} />
     </div>
     <div className="flex-1 min-h-0">
-      <DataTable columns={columns} data={ciclos} title="Ciclos" status="ok" onEdit={setSelected} addLabel="" />
+      <DataTable columns={columns} data={ciclos} title={t.operations.cycles} status="ok" onEdit={setSelected} addLabel="" />
     </div>
     <Drawer open={!!selected} onClose={()=>setSelected(null)} title="Detalhe do Ciclo" subtitle={selected?.equip+' — '+selected?.inicio}>
       {selected && <div className="space-y-6">

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -112,6 +113,7 @@ const empty = {
 }
 
 export default function OrdensServico() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -176,10 +178,10 @@ export default function OrdensServico() {
   }
 
   return (<>
-    <DataTable columns={columns} data={data} title="Ordens de Serviço"
+    <DataTable columns={columns} data={data} title={t.maintenance.workOrders}
       status={data.some(o => o.prioridade === 'URGENTE' && o.status === 'ABERTA') ? 'crit' : 'warn'}
       onAdd={() => { setForm(empty); setEditing(null); setTab('dados'); setOpen(true) }}
-      onEdit={openEdit} onDelete={setDel} addLabel="Nova OS" />
+      onEdit={openEdit} onDelete={setDel} addLabel={t.maintenance.newWO} />
 
     <Drawer open={open} onClose={() => setOpen(false)} title={editing ? editing.numero : 'Nova Ordem de Serviço'} subtitle={editing?.descricao?.slice(0, 50)} width="w-[560px]"
       footer={<>

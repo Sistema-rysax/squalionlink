@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import Drawer from '../../components/panels/Drawer'
 import { Select, FormSection, Textarea, Input } from '../../components/controls/FormFields'
 import { toast } from '../../components/ui/Toast'
@@ -25,6 +26,7 @@ const routeScores: Record<string, number> = {
 }
 
 export default function Dispatch() {
+  const t = useT()
   const [equips] = useState(equipamentos.map(e => ({
     ...e,
     rota_atual: e.atividade?.includes('Transporte') ? 'Frente Norte B3 → Britador' : null,

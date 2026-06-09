@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useT } from '../../contexts/LanguageContext'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -16,6 +17,7 @@ const init = [
 const empty = {nome:'',tipo:'LAVRA',material:'',cor:'#2563eb'}
 
 export default function AreasPage() {
+  const t = useT()
   const [data, setData] = useState(init)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -35,8 +37,8 @@ export default function AreasPage() {
     { key:'status', label:'Status', render:(r:any)=><div className="flex items-center gap-2"><div className={'led led-'+(r.status==='ATIVA'?'ok':'off')}></div><span className="text-[10px]">{r.status}</span></div> },
   ]
   return (<>
-    <DataTable columns={columns} data={data} title="Áreas Operacionais" status="info" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={r=>{setForm({nome:r.nome,tipo:r.tipo,material:r.material,cor:r.cor});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel="Nova Área" />
-    <Drawer open={open} onClose={()=>setOpen(false)} title={editing?'Editar Área':'Nova Área'}
+    <DataTable columns={columns} data={data} title={t.areas.title} status="info" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={r=>{setForm({nome:r.nome,tipo:r.tipo,material:r.material,cor:r.cor});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel={t.areas.newArea} />
+    <Drawer open={open} onClose={()=>setOpen(false)} title={editing ? t.areas.editArea : t.areas.newArea}
       footer={<><button onClick={()=>setOpen(false)} className="px-4 py-2 text-xs font-mono uppercase text-dim border border-hud-border rounded-md">Cancelar</button><button onClick={save} className="px-4 py-2 text-xs font-mono uppercase text-brand-400 bg-brand-600/20 border border-brand-600/40 rounded-md hover:shadow-glow-sm transition-all">Salvar</button></>}>
       <div className="space-y-6"><FormSection title="Dados"><Input label="Nome" value={form.nome} onChange={v=>set('nome',v)} required /><FormGrid><Select label="Tipo" value={form.tipo} onChange={v=>set('tipo',v)} options={[{value:'LAVRA',label:'Lavra'},{value:'DEPOSITO',label:'Depósito'},{value:'BENEFICIAMENTO',label:'Beneficiamento'},{value:'APOIO',label:'Apoio'}]} /><Input label="Material" value={form.material} onChange={v=>set('material',v)} /></FormGrid></FormSection><FormSection title="Visual"><ColorPicker label="Cor no Mapa" value={form.cor} onChange={v=>set('cor',v)} /></FormSection></div>
     </Drawer>
