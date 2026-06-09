@@ -4,6 +4,7 @@ import L from 'leaflet'
 import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff, Search, X, ChevronRight, Fuel, Clock, Gauge, Activity, MapPin, Thermometer, Zap, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowUp, ArrowDown } from 'lucide-react'
 import DigitalTwin from '../../components/map/DigitalTwin'
+import CesiumMap from '../../components/map/CesiumMap'
 import 'leaflet/dist/leaflet.css'
 
 /* ─── EXTENDED SNAPSHOT DATA ─── */
@@ -157,6 +158,7 @@ export default function Mapa() {
   const [searchTerm, setSearchTerm] = useState('')
   const [layerPanel, setLayerPanel] = useState(false)
   const [twinOpen, setTwinOpen] = useState(false)
+  const [mapMode, setMapMode] = useState<'2d' | '3d'>('2d')
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
@@ -237,7 +239,8 @@ export default function Mapa() {
 
       {/* CENTER: Map */}
       <div ref={mapContainerRef} className="flex-1 relative">
-        <MapContainer center={[-20.124, -43.987]} zoom={14} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
+        {mapMode === '3d' && <CesiumMap onSelectEquip={selectEquip} selectedEquip={selectedEquip} flyTarget={flyTarget} />}
+        {mapMode === '2d' && <MapContainer center={[-20.124, -43.987]} zoom={14} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
           <TileLayer url={currentBase.url} attribution="" />
           <FlyTo target={flyTarget} />
 
@@ -282,7 +285,13 @@ export default function Mapa() {
               </Marker>
             )
           })}
-        </MapContainer>
+        </MapContainer>}
+
+        {/* 2D/3D toggle */}
+        <div className="absolute top-3 left-3 z-[400] flex bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded-lg overflow-hidden">
+          <button onClick={() => setMapMode('2d')} className={`px-3 py-1.5 text-[9px] font-mono uppercase transition-all ${mapMode === '2d' ? 'bg-brand-600/20 text-brand-400' : 'text-dim hover:text-gray-300'}`}>2D</button>
+          <button onClick={() => setMapMode('3d')} className={`px-3 py-1.5 text-[9px] font-mono uppercase transition-all ${mapMode === '3d' ? 'bg-brand-600/20 text-brand-400' : 'text-dim hover:text-gray-300'}`}>3D Terrain</button>
+        </div>
 
         {/* Layer control */}
         <button onClick={() => setLayerPanel(!layerPanel)} className="absolute top-3 right-3 z-[400] w-9 h-9 bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded-lg flex items-center justify-center hover:bg-hud-panel transition-all shadow-lg">
