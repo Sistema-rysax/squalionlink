@@ -15,15 +15,29 @@
 
 ## Documentação
 
-- [Arquitetura](docs/ARCHITECTURE.md)
-- [Modelagem de Dados](docs/DATABASE.md)
-- [Multi-Tenant](docs/MULTI-TENANT.md)
-- [Módulos](docs/MODULES.md)
-- [Rotograma & Velocidade](docs/ROTOGRAMA.md)
-- [Atividades & Status](docs/ATIVIDADES.md)
-- [Ciclo Operacional](docs/CICLO-OPERACIONAL.md)
+### 📖 Visão Geral
+- [Overview — Texto explicativo completo](docs/OVERVIEW.md)
+
+### 🏗️ Arquitetura & Infra
+- [Arquitetura do Sistema](docs/ARCHITECTURE.md)
+- [Multi-Tenant (RLS)](docs/MULTI-TENANT.md)
+- [Docker Compose](docs/DOCKER.md)
 - [i18n & Timezone](docs/I18N-TIMEZONE.md)
-- [Docker](docs/DOCKER.md)
+
+### 📊 Modelagem de Dados
+- [Database — Tabelas e Convenções](docs/DATABASE.md)
+- [SQL Schema Completo](schema/001_initial.sql)
+
+### 📦 Módulos
+- [Módulos & Planos](docs/MODULES.md)
+- [Rotograma & Velocidade](docs/ROTOGRAMA.md)
+- [Atividades & Status Real-Time](docs/ATIVIDADES.md)
+- [Ciclo Operacional](docs/CICLO-OPERACIONAL.md)
+- [Dispatch & Alocação](docs/DISPATCH.md)
+- [KPI & Indicadores](docs/KPI.md)
+
+### 🔌 API
+- [API Documentation (REST + WebSocket)](docs/API.md)
 
 ## Módulos Principais
 
