@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react'
-import { Activity, AlertTriangle, Wifi, Clock, Truck, Zap } from 'lucide-react'
+import { Activity, AlertTriangle, Wifi, Clock, Truck, Zap, Sun, Moon } from 'lucide-react'
+import { useTheme } from '../../contexts/ThemeContext'
 
 export default function StatusBar() {
   const [time, setTime] = useState(new Date())
+  const { theme, toggle } = useTheme()
   useEffect(() => { const t = setInterval(()=>setTime(new Date()), 1000); return ()=>clearInterval(t) }, [])
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-12 z-50 flex items-center justify-between px-6 bg-hud-bg/80 backdrop-blur-md border-b border-hud-border">
+    <header className="fixed top-0 left-0 right-0 h-12 z-50 flex items-center justify-between px-6 bg-hud-panel/95 backdrop-blur-md border-b border-hud-border transition-colors duration-300">
       {/* Left - System ID */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded bg-brand-600 flex items-center justify-center">
-            <span className="text-[10px] font-display font-bold text-white">SL</span>
+            <span className="text-[10px] font-display font-bold" style={{color:'#fff'}}>SL</span>
           </div>
           <span className="font-display text-xs tracking-widest text-brand-400">SQUALIONLINK</span>
         </div>
@@ -46,8 +48,16 @@ export default function StatusBar() {
         </div>
       </div>
 
-      {/* Right - Clock + Connection */}
+      {/* Right - Theme Toggle + Clock + Connection */}
       <div className="flex items-center gap-4">
+        {/* Theme Toggle */}
+        <button onClick={toggle} className="relative flex items-center w-12 h-6 rounded-full border border-hud-border bg-hud-bg transition-all duration-300 hover:border-brand-600/40 group" title={theme==='dark'?'Modo Dia':'Modo Noite'}>
+          <div className={`absolute w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${theme==='light'?'translate-x-6 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]':'translate-x-0.5 bg-slate-600 shadow-[0_0_8px_rgba(100,116,139,0.3)]'}`}>
+            {theme==='light' ? <Sun className="w-3 h-3 text-white" /> : <Moon className="w-3 h-3 text-slate-300" />}
+          </div>
+        </button>
+
+        <div className="w-px h-5 bg-hud-border" />
         <div className="flex items-center gap-1.5">
           <Wifi className="w-3.5 h-3.5 text-ok" />
           <span className="text-[10px] font-mono text-dim">48ms</span>
