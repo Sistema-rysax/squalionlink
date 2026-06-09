@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Activity, AlertTriangle, Wifi, Clock, Truck, Zap, Sun, Moon } from 'lucide-react'
 import { useTheme } from '../../contexts/ThemeContext'
+import { equipamentos, alertas } from '../../mock/data'
 
 export default function StatusBar() {
   const [time, setTime] = useState(new Date())
@@ -28,12 +29,12 @@ export default function StatusBar() {
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-1.5">
           <Truck className="w-3.5 h-3.5 text-ok" />
-          <span className="font-mono text-xs text-gray-300">7<span className="text-dim">/10</span></span>
+          <span className="font-mono text-xs text-gray-300">{equipamentos.filter(e => e.status === 'OPERANDO').length}<span className="text-dim">/{equipamentos.length}</span></span>
           <span className="text-[9px] text-dim uppercase">operando</span>
         </div>
         <div className="flex items-center gap-1.5">
           <Activity className="w-3.5 h-3.5 text-brand-400" />
-          <span className="font-mono text-xs text-gray-300">14.8k</span>
+          <span className="font-mono text-xs text-gray-300">42.6k</span>
           <span className="text-[9px] text-dim uppercase">ton/turno</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -43,7 +44,7 @@ export default function StatusBar() {
         </div>
         <div className="flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5 text-crit animate-breathe" />
-          <span className="font-mono text-xs text-crit">4</span>
+          <span className="font-mono text-xs text-crit">{alertas.filter(a => !a.tratado).length}</span>
           <span className="text-[9px] text-dim uppercase">alertas</span>
         </div>
       </div>

@@ -61,7 +61,7 @@ export default function CesiumMap({ onSelectEquip, selectedEquip, flyTarget }: P
 
     // Fly to mine area
     viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(-43.987, -20.124, 3000),
+      destination: Cesium.Cartesian3.fromDegrees(-43.971, -20.153, 3000),
       orientation: {
         heading: Cesium.Math.toRadians(0),
         pitch: Cesium.Math.toRadians(-45),
@@ -102,11 +102,12 @@ export default function CesiumMap({ onSelectEquip, selectedEquip, flyTarget }: P
 
     // Add geofence areas
     const areas = [
-      { nome: 'Frente Norte B3', color: '#ef4444', coords: [[-43.982,-20.115],[-43.975,-20.115],[-43.975,-20.120],[-43.982,-20.120]] },
-      { nome: 'Frente Sul', color: '#f97316', coords: [[-43.992,-20.127],[-43.985,-20.127],[-43.985,-20.132],[-43.992,-20.132]] },
-      { nome: 'Pilha Esteril', color: '#22c55e', coords: [[-43.975,-20.135],[-43.965,-20.135],[-43.965,-20.140],[-43.975,-20.140]] },
-      { nome: 'Britador', color: '#6366f1', coords: [[-43.998,-20.125],[-43.993,-20.125],[-43.993,-20.128],[-43.998,-20.128]] },
-      { nome: 'Pilha ROM', color: '#0ea5e9', coords: [[-43.997,-20.118],[-43.992,-20.118],[-43.992,-20.121],[-43.997,-20.121]] },
+      { nome: 'Frente Norte', color: '#ef4444', coords: [[-43.978,-20.146],[-43.973,-20.146],[-43.973,-20.151],[-43.978,-20.151]] },
+      { nome: 'Frente Sul', color: '#f97316', coords: [[-43.976,-20.153],[-43.971,-20.153],[-43.971,-20.158],[-43.976,-20.158]] },
+      { nome: 'Patio Manutencao', color: '#6b7280', coords: [[-43.972,-20.156],[-43.968,-20.156],[-43.968,-20.159],[-43.972,-20.159]] },
+      { nome: 'Britador Primario', color: '#6366f1', coords: [[-43.978,-20.148],[-43.975,-20.148],[-43.975,-20.150],[-43.978,-20.150]] },
+      { nome: 'Pilha ROM', color: '#0ea5e9', coords: [[-43.974,-20.149],[-43.971,-20.149],[-43.971,-20.152],[-43.974,-20.152]] },
+      { nome: 'Deposito Esteril', color: '#22c55e', coords: [[-43.980,-20.152],[-43.976,-20.152],[-43.976,-20.156],[-43.980,-20.156]] },
     ]
 
     areas.forEach(a => {

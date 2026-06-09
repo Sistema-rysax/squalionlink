@@ -9,10 +9,10 @@ import 'leaflet/dist/leaflet.css'
 
 /* ─── EXTENDED SNAPSHOT DATA ─── */
 const snapshots: Record<number, any> = {
-  1: { 
+  11: { 
     ult_gps:'09/06 10:42:18', ignicao:true, motor_temp:92, rpm:1850, marcha:'D3', pressao_oleo:42,
     odometro:84520, consumo_medio:58.2, consumo_inst:62.1, autonomia_hrs:4.2,
-    area_atual:'Frente Norte B3', subarea:'Praca de Carga A', rota:'F-001: Frente Norte -> Britador',
+    area_atual:'Frente Norte', subarea:'Praca de Carga A', rota:'F-001: Frente Norte → Britador Primario',
     ult_abastecimento:'09/06 06:15', litros_ult:420, ult_checklist:'09/06 06:00',
     turno:'DIURNO A', inicio_turno:'06:00', fim_turno:'18:00',
     viagens_turno:12, tons_turno:960, km_turno:38.4, tempo_fila_min:8, tempo_carga_min:3.2, tempo_manobra_min:1.8, tempo_descarga_min:2.1,
@@ -20,10 +20,10 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-06-01', proxima_prev:'2024-06-15', hrs_para_prev:180,
     alertas_abertos:1, ncs_abertas:0
   },
-  2: {
+  21: {
     ult_gps:'09/06 10:42:15', ignicao:true, motor_temp:88, rpm:750, marcha:'N', pressao_oleo:38,
     odometro:72100, consumo_medio:55.8, consumo_inst:12.5, autonomia_hrs:6.8,
-    area_atual:'Frente Norte B3', subarea:'Praca de Carga A', rota:'F-001: Frente Norte -> Britador',
+    area_atual:'Frente Norte', subarea:'Praca de Carga A', rota:'F-001: Frente Norte → Britador Primario',
     ult_abastecimento:'09/06 06:30', litros_ult:380, ult_checklist:'09/06 06:05',
     turno:'DIURNO A', inicio_turno:'06:00', fim_turno:'18:00',
     viagens_turno:10, tons_turno:800, km_turno:32.0, tempo_fila_min:22, tempo_carga_min:3.0, tempo_manobra_min:1.5, tempo_descarga_min:2.0,
@@ -31,7 +31,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-05-28', proxima_prev:'2024-06-28', hrs_para_prev:420,
     alertas_abertos:0, ncs_abertas:0
   },
-  3: {
+  26: {
     ult_gps:'09/06 08:12:44', ignicao:false, motor_temp:45, rpm:0, marcha:'P', pressao_oleo:0,
     odometro:91200, consumo_medio:61.2, consumo_inst:0, autonomia_hrs:0,
     area_atual:'Oficina Central', subarea:'Box 3', rota:'---',
@@ -42,7 +42,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-06-09', proxima_prev:'---', hrs_para_prev:0,
     alertas_abertos:2, ncs_abertas:1
   },
-  4: {
+  27: {
     ult_gps:'09/06 10:42:12', ignicao:true, motor_temp:86, rpm:2100, marcha:'D4', pressao_oleo:44,
     odometro:63400, consumo_medio:72.5, consumo_inst:78.3, autonomia_hrs:5.1,
     area_atual:'Rota F-002', subarea:'Em transito', rota:'F-002: Frente Sul -> Pilha Esteril',
@@ -53,7 +53,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-05-20', proxima_prev:'2024-06-20', hrs_para_prev:240,
     alertas_abertos:0, ncs_abertas:0
   },
-  5: {
+  94: {
     ult_gps:'09/06 10:41:58', ignicao:true, motor_temp:78, rpm:1200, marcha:'D2', pressao_oleo:40,
     odometro:55800, consumo_medio:65.0, consumo_inst:48.2, autonomia_hrs:7.2,
     area_atual:'Pilha Esteril', subarea:'Zona B', rota:'F-002: Frente Sul -> Pilha Esteril',
@@ -64,10 +64,10 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-06-05', proxima_prev:'2024-07-05', hrs_para_prev:520,
     alertas_abertos:0, ncs_abertas:0
   },
-  6: {
+  102: {
     ult_gps:'09/06 10:42:05', ignicao:true, motor_temp:75, rpm:1400, marcha:'D2', pressao_oleo:48,
     odometro:38200, consumo_medio:42.0, consumo_inst:38.5, autonomia_hrs:8.4,
-    area_atual:'Frente Norte B3', subarea:'Face 2', rota:'Carregamento',
+    area_atual:'Frente Norte', subarea:'Face 2', rota:'Carregamento',
     ult_abastecimento:'09/06 06:10', litros_ult:280, ult_checklist:'09/06 06:00',
     turno:'DIURNO A', inicio_turno:'06:00', fim_turno:'18:00',
     viagens_turno:0, tons_turno:0, km_turno:2.1, tempo_fila_min:0, tempo_carga_min:0, tempo_manobra_min:0, tempo_descarga_min:0,
@@ -75,7 +75,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-06-02', proxima_prev:'2024-06-30', hrs_para_prev:380,
     alertas_abertos:0, ncs_abertas:0
   },
-  7: {
+  105: {
     ult_gps:'09/06 10:41:50', ignicao:true, motor_temp:72, rpm:1100, marcha:'D1', pressao_oleo:46,
     odometro:42100, consumo_medio:38.5, consumo_inst:35.0, autonomia_hrs:9.6,
     area_atual:'Frente Sul', subarea:'Bancada 2', rota:'Carregamento',
@@ -86,7 +86,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-05-25', proxima_prev:'2024-06-25', hrs_para_prev:320,
     alertas_abertos:0, ncs_abertas:0
   },
-  8: {
+  15: {
     ult_gps:'09/06 10:42:20', ignicao:true, motor_temp:82, rpm:1600, marcha:'D3', pressao_oleo:41,
     odometro:28900, consumo_medio:35.0, consumo_inst:32.0, autonomia_hrs:11.2,
     area_atual:'Acesso Principal', subarea:'Trecho 3', rota:'Terraplanagem',
@@ -97,7 +97,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-06-07', proxima_prev:'2024-07-07', hrs_para_prev:480,
     alertas_abertos:0, ncs_abertas:0
   },
-  9: {
+  18: {
     ult_gps:'09/06 10:40:30', ignicao:true, motor_temp:68, rpm:900, marcha:'D1', pressao_oleo:44,
     odometro:12600, consumo_medio:28.0, consumo_inst:22.0, autonomia_hrs:14.5,
     area_atual:'Pilha ROM', subarea:'Topo', rota:'Espalhamento',
@@ -108,7 +108,7 @@ const snapshots: Record<number, any> = {
     ult_manutencao:'2024-06-04', proxima_prev:'2024-07-04', hrs_para_prev:450,
     alertas_abertos:0, ncs_abertas:0
   },
-  10: {
+  20: {
     ult_gps:'09/06 10:42:08', ignicao:true, motor_temp:80, rpm:1800, marcha:'D3', pressao_oleo:43,
     odometro:19500, consumo_medio:32.0, consumo_inst:30.5, autonomia_hrs:10.8,
     area_atual:'Acesso Sul', subarea:'Curva 2', rota:'Perfuracao',
@@ -123,11 +123,12 @@ const snapshots: Record<number, any> = {
 
 /* ─── GEOFENCES / AREAS MOCK ─── */
 const areas = [
-  { id: 1, nome: 'Frente Norte B3', tipo: 'CARGA', color: '#ef4444', coords: [[-20.115, -43.982], [-20.115, -43.975], [-20.120, -43.975], [-20.120, -43.982]] },
-  { id: 2, nome: 'Frente Sul', tipo: 'CARGA', color: '#f97316', coords: [[-20.127, -43.992], [-20.127, -43.985], [-20.132, -43.985], [-20.132, -43.992]] },
-  { id: 3, nome: 'Pilha Esteril', tipo: 'DESCARGA', color: '#22c55e', coords: [[-20.135, -43.975], [-20.135, -43.965], [-20.140, -43.965], [-20.140, -43.975]] },
-  { id: 4, nome: 'Britador', tipo: 'DESCARGA', color: '#6366f1', coords: [[-20.125, -43.998], [-20.125, -43.993], [-20.128, -43.993], [-20.128, -43.998]] },
-  { id: 5, nome: 'Pilha ROM', tipo: 'DESCARGA', color: '#0ea5e9', coords: [[-20.118, -43.997], [-20.118, -43.992], [-20.121, -43.992], [-20.121, -43.997]] },
+  { id: 1, nome: 'Frente Norte', tipo: 'CARGA', color: '#ef4444', coords: [[-20.146, -43.978], [-20.146, -43.973], [-20.151, -43.973], [-20.151, -43.978]] },
+  { id: 2, nome: 'Frente Sul', tipo: 'CARGA', color: '#f97316', coords: [[-20.153, -43.976], [-20.153, -43.971], [-20.158, -43.971], [-20.158, -43.976]] },
+  { id: 3, nome: 'Deposito Esteril', tipo: 'DESCARGA', color: '#22c55e', coords: [[-20.152, -43.980], [-20.152, -43.976], [-20.156, -43.976], [-20.156, -43.980]] },
+  { id: 4, nome: 'Britador Primario', tipo: 'DESCARGA', color: '#6366f1', coords: [[-20.148, -43.978], [-20.148, -43.975], [-20.150, -43.975], [-20.150, -43.978]] },
+  { id: 5, nome: 'Pilha ROM', tipo: 'DESCARGA', color: '#0ea5e9', coords: [[-20.149, -43.974], [-20.149, -43.971], [-20.152, -43.971], [-20.152, -43.974]] },
+  { id: 6, nome: 'Patio Manutencao', tipo: 'APOIO', color: '#6b7280', coords: [[-20.156, -43.972], [-20.156, -43.968], [-20.159, -43.968], [-20.159, -43.972]] },
 ]
 
 const baseMaps = [
@@ -240,7 +241,7 @@ export default function Mapa() {
       {/* CENTER: Map */}
       <div ref={mapContainerRef} className="flex-1 relative">
         {mapMode === '3d' && <CesiumMap onSelectEquip={selectEquip} selectedEquip={selectedEquip} flyTarget={flyTarget} />}
-        {mapMode === '2d' && <MapContainer center={[-20.124, -43.987]} zoom={14} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
+        {mapMode === '2d' && <MapContainer center={[-20.153, -43.971]} zoom={14} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
           <TileLayer url={currentBase.url} attribution="" />
           <FlyTo target={flyTarget} />
 
