@@ -96,7 +96,7 @@ export default function NavDock() {
   useEffect(() => { setOpenMenu(null) }, [location.pathname])
 
   return (
-    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50" ref={menuRef}>
+    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]" ref={menuRef}>
       <div className="flex items-center gap-0.5 px-2 py-1.5 bg-hud-panel/95 backdrop-blur-xl border border-hud-border rounded-2xl shadow-panel">
         {modules.map(m => {
           const Icon = m.icon

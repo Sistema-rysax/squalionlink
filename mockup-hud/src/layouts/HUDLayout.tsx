@@ -8,7 +8,7 @@ export default function HUDLayout() {
     <div className="h-screen w-screen overflow-hidden relative noise">
       <GridBackground />
       <StatusBar />
-      <main className="absolute inset-0 pt-12 pb-20 px-4 overflow-y-auto">
+      <main className="absolute inset-0 pt-12 pb-20 px-4 overflow-y-auto z-0">
         <Outlet />
       </main>
       <NavDock />
