@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { LayoutDashboard, Map, Truck, Users, Radio, Wrench, BarChart3, Settings, Layers, Fuel, ClipboardCheck, FlaskConical, CalendarRange, MessageSquare, GitBranch } from 'lucide-react'
+import { Monitor, LayoutDashboard, Map, Truck, Users, Radio, Wrench, BarChart3, Settings, Layers, Fuel, ClipboardCheck, FlaskConical, CalendarRange, MessageSquare, GitBranch } from 'lucide-react'
 
 interface ModuleItem {
   icon: any
@@ -10,7 +10,8 @@ interface ModuleItem {
 }
 
 const modules: ModuleItem[] = [
-  { icon: LayoutDashboard, label: 'Painel', path: '/' },
+  { icon: Monitor, label: 'Desktop', path: '/' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Map, label: 'Mapa', path: '/mapa' },
   { icon: Truck, label: 'Frota', path: '/frota', sub: [
     { label: 'Equipamentos', path: '/frota' },

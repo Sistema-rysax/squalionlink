@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import HUDLayout from './layouts/HUDLayout'
 import { ToastContainer } from './components/ui/Toast'
 import Dashboard from './modules/dashboard/Dashboard'
+import Desktop from './modules/desktop/Desktop'
 import Equipamentos from './modules/fleet/Equipamentos'
 import Modelos from './modules/fleet/Modelos'
 import GruposEquipamento from './modules/fleet/GruposEquipamento'
@@ -52,7 +53,9 @@ export default function App() {
       <ToastContainer />
       <Routes>
         <Route element={<HUDLayout />}>
-          <Route index element={<Dashboard />} />
+          <Route index element={<Desktop />} />
+          <Route path="desktop" element={<Desktop />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="mapa" element={<Mapa />} />
           <Route path="frota" element={<Equipamentos />} />
           <Route path="frota/modelos" element={<Modelos />} />
@@ -69,7 +72,6 @@ export default function App() {
           <Route path="operacao/turnos" element={<Turnos />} />
           <Route path="operacao/regime" element={<RegimeTurno />} />
           <Route path="operacao/regras-alerta" element={<RegrasAlerta />} />
-          <Route path="operacao/rotograma" element={<Rotograma />} />
           <Route path="operacao/rotograma" element={<Rotograma />} />
           <Route path="abastecimento" element={<Abastecimento />} />
           <Route path="abastecimento/postos" element={<PostosAbastecimento />} />
