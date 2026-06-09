@@ -205,3 +205,12 @@
 
 **TOTAL ATUALIZADO: ~92 tabelas**
 
+
+### Mobile & Sync (5 tabelas)
+- `dispositivo_mobile`
+- `dispositivo_escopo`
+- `sync_entidade_versao`
+- `sync_sessao`
+- `sync_fila_upload`
+
+**TOTAL ATUALIZADO: ~97 tabelas**
