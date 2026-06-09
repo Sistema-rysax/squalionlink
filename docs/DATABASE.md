@@ -245,3 +245,26 @@
 - `mensagem_resposta_rapida`
 
 **TOTAL ATUALIZADO: ~114 tabelas**
+
+### Permissoes (3 tabelas - funcionalidade reestruturada)
+- `modulo`
+- `funcionalidade_grupo`
+- `perfil_permissao` (substitui perfil_funcionalidade)
+
+### Autenticacao (4 tabelas)
+- `usuario_credencial`
+- `usuario_mfa`
+- `auth_sessao`
+- `auth_log`
+- `auth_config`
+
+### Email (3 tabelas)
+- `email_template`
+- `email_fila`
+- `email_config`
+
+### SSO (2 tabelas)
+- `sso_provedor`
+- `usuario_sso`
+
+**TOTAL ATUALIZADO: ~127 tabelas**
