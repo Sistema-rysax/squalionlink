@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect, createContext, useContext } from 'react'
-import { MapContainer, TileLayer, Marker, Polygon, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Polygon, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff, Search, X, ChevronRight, Fuel, Clock, Gauge, Activity, MapPin, Thermometer, Zap, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowUp, ArrowDown } from 'lucide-react'
@@ -157,6 +157,12 @@ export default function Mapa() {
   const [searchTerm, setSearchTerm] = useState('')
   const [layerPanel, setLayerPanel] = useState(false)
   const [twinOpen, setTwinOpen] = useState(false)
+  const [infoFields, setInfoFields] = useState({
+    codigo: true, status: true, conexao: true, horimetro: true,
+    odometro: true, modelo: true, operador: true, atividade: true,
+    velocidade: true, tanque: true, placa: false, contratada: false
+  })
+  const [showFieldConfig, setShowFieldConfig] = useState(false)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
@@ -278,11 +284,117 @@ export default function Mapa() {
             })
             return (
               <Marker key={e.id} position={[e.lat, e.lng]} icon={icon} eventHandlers={{ click: () => selectEquip(e) }}>
-                <Popup><div className="text-xs font-mono"><strong>{e.codigo}</strong><br/>{e.atividade || '---'}<br/>{e.vel} km/h</div></Popup>
+                <Tooltip direction="top" offset={[0, -14]} opacity={0.9}>
+                  <div className="text-xs font-mono"><strong>{e.codigo}</strong> - {e.vel} km/h</div>
+                </Tooltip>
               </Marker>
             )
           })}
         </MapContainer>
+
+        {/* Floating equipment info card */}
+        {selectedEquip && (
+          <div className="absolute bottom-4 left-4 z-[500] bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-3 min-w-[220px] max-w-[260px] shadow-2xl">
+            {/* Header with config toggle */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${selectedEquip.status === 'OPERANDO' ? 'bg-green-400' : selectedEquip.status === 'PARADO' ? 'bg-amber-400' : 'bg-red-400'} animate-pulse`}></div>
+                <span className="text-xs font-mono font-bold text-white">{selectedEquip.codigo}</span>
+              </div>
+              <button onClick={() => setShowFieldConfig(!showFieldConfig)} className="p-1 rounded hover:bg-white/10 transition-colors" title="Configurar campos">
+                <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+              </button>
+            </div>
+
+            {/* Field config dropdown */}
+            {showFieldConfig && (
+              <div className="mb-2 pb-2 border-b border-white/10">
+                <div className="grid grid-cols-2 gap-1">
+                  {Object.entries(infoFields).map(([k, v]) => (
+                    <button key={k} onClick={() => setInfoFields(p => ({ ...p, [k]: !p[k as keyof typeof p] }))} className={`text-[8px] font-mono px-1.5 py-0.5 rounded transition-all ${v ? 'bg-brand-600/30 text-brand-300 border border-brand-500/30' : 'bg-white/5 text-gray-500 border border-transparent'}`}>
+                      {k}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Data fields */}
+            <div className="space-y-1">
+              {infoFields.status && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Status</span>
+                  <span className={`text-[9px] font-mono font-medium ${selectedEquip.status === 'OPERANDO' ? 'text-green-400' : selectedEquip.status === 'PARADO' ? 'text-amber-400' : 'text-red-400'}`}>{selectedEquip.status}</span>
+                </div>
+              )}
+              {infoFields.conexao && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Conexao</span>
+                  <span className="text-[9px] font-mono text-green-400 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>Online</span>
+                </div>
+              )}
+              {infoFields.modelo && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Modelo</span>
+                  <span className="text-[9px] font-mono text-gray-200 truncate ml-2">{selectedEquip.modelo}</span>
+                </div>
+              )}
+              {infoFields.operador && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Operador</span>
+                  <span className="text-[9px] font-mono text-gray-200 truncate ml-2">{selectedEquip.operador || '---'}</span>
+                </div>
+              )}
+              {infoFields.atividade && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Atividade</span>
+                  <span className="text-[9px] font-mono text-gray-200 truncate ml-2">{selectedEquip.atividade || '---'}</span>
+                </div>
+              )}
+              {infoFields.horimetro && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Horimetro</span>
+                  <span className="text-[9px] font-mono text-gray-200">{selectedEquip.horimetro?.toLocaleString()} hrs</span>
+                </div>
+              )}
+              {infoFields.odometro && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Odometro</span>
+                  <span className="text-[9px] font-mono text-gray-200">{(selectedEquip.horimetro * 3.2).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} km</span>
+                </div>
+              )}
+              {infoFields.velocidade && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Velocidade</span>
+                  <span className="text-[9px] font-mono text-gray-200">{selectedEquip.vel} km/h</span>
+                </div>
+              )}
+              {infoFields.tanque && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Tanque</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full ${selectedEquip.tanque > 40 ? 'bg-green-400' : selectedEquip.tanque > 20 ? 'bg-amber-400' : 'bg-red-400'}`} style={{ width: selectedEquip.tanque + '%' }}></div>
+                    </div>
+                    <span className="text-[9px] font-mono text-gray-200">{selectedEquip.tanque}%</span>
+                  </div>
+                </div>
+              )}
+              {infoFields.placa && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Placa</span>
+                  <span className="text-[9px] font-mono text-gray-200">{selectedEquip.placa || '---'}</span>
+                </div>
+              )}
+              {infoFields.contratada && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-gray-400">Contratada</span>
+                  <span className="text-[9px] font-mono text-gray-200">{selectedEquip.contratada}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Layer control */}
         <button onClick={() => setLayerPanel(!layerPanel)} className="absolute top-3 right-3 z-[400] w-9 h-9 bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded-lg flex items-center justify-center hover:bg-hud-panel transition-all shadow-lg">
