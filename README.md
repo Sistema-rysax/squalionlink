@@ -19,6 +19,8 @@
 - [Modelagem de Dados](docs/DATABASE.md)
 - [Multi-Tenant](docs/MULTI-TENANT.md)
 - [Módulos](docs/MODULES.md)
+- [Rotograma & Velocidade](docs/ROTOGRAMA.md)
+- [Atividades & Status](docs/ATIVIDADES.md)
 - [i18n & Timezone](docs/I18N-TIMEZONE.md)
 - [Docker](docs/DOCKER.md)
 
@@ -27,6 +29,9 @@
 - 🚜 Gestão de Frota (equipamento, modelo, grupo, fabricante)
 - 📋 Checklist Engine (grupo, item, criticidade, foto, modelo)
 - 🗺️ Áreas & Geofencing (origem, destino, improdutiva, manutenção)
+- 🛣️ Rotograma (cercas virtuais, velocidade seco/chuva, excesso)
+- 🏷️ Atividades (grupo, tipo, regras movimento/parada, alertas inteligentes)
+- 📊 Status Real-Time (status operacional por equipamento, mapa game-style)
 - 🔧 Manutenção Preventiva (plano, gatilho, programação, OS)
 - 🚨 Manutenção Corretiva (solicitação, diagnóstico, causa raiz)
 - 👷 Gestão de Operadores (habilitação, documentos, turno)
