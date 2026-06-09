@@ -181,7 +181,8 @@ export default function Dashboard() {
       <DockviewReact
         onReady={onReady}
         components={components}
-        className="dockview-theme-dark h-full"
+        className="dockview-theme-dark dv-locked h-full"
+        locked={true}
         watermarkComponent={() => null}
       />
     </div>

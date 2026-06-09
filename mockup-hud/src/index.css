@@ -388,6 +388,14 @@ body {
   min-height: 32px !important;
 }
 
+/* LOCKED: Hide close buttons on Dashboard/Mapa/Alocação panels */
+.dv-locked .dv-default-tab-action,
+.dv-locked .dv-tab-close-btn,
+.dv-locked [data-testid="dockview-close-button"],
+.dv-locked button[aria-label="Close"] {
+  display: none !important;
+}
+
 /* Active tab indicator */
 .dockview-theme-dark .dv-tab.dv-active-tab {
   border-bottom: 2px solid var(--brand-400) !important;

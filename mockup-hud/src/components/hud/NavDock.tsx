@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Monitor, LayoutDashboard, Map, Truck, Users, Radio, Wrench, BarChart3, Settings, Layers, Fuel, ClipboardCheck, FlaskConical, CalendarRange, MessageSquare, GitBranch } from 'lucide-react'
 
 interface ModuleItem {
@@ -23,7 +23,7 @@ const modules: ModuleItem[] = [
   { icon: Users, label: 'Operadores', path: '/operadores' },
   { icon: Radio, label: 'Operação', path: '/operacao', sub: [
     { label: 'Atividades', path: '/operacao' },
-    { label: '⬡ Alocação', path: '/operacao/alocacao' },
+    { label: 'Alocação', path: '/operacao/alocacao' },
     { label: 'Dispatch', path: '/operacao/dispatch' },
     { label: 'Ciclos', path: '/operacao/ciclos' },
     { label: 'Alertas', path: '/operacao/alertas' },
@@ -76,36 +76,81 @@ const modules: ModuleItem[] = [
 
 export default function NavDock() {
   const location = useLocation()
-  const [hover, setHover] = useState<string|null>(null)
+  const [openMenu, setOpenMenu] = useState<string|null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  // Close menu on click outside
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenu(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  // Close menu on route change
+  useEffect(() => { setOpenMenu(null) }, [location.pathname])
 
   return (
-    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50" ref={menuRef}>
       <div className="flex items-center gap-0.5 px-2 py-1.5 bg-hud-panel/95 backdrop-blur-xl border border-hud-border rounded-2xl shadow-panel">
         {modules.map(m => {
           const Icon = m.icon
           const isActive = m.path === '/' ? location.pathname === '/' : location.pathname.startsWith(m.path)
+          const isMenuOpen = openMenu === m.path
+
+          const handleClick = (e: React.MouseEvent) => {
+            if (m.sub && m.sub.length > 0) {
+              e.preventDefault()
+              setOpenMenu(isMenuOpen ? null : m.path)
+            } else {
+              setOpenMenu(null)
+            }
+          }
+
           return (
-            <div key={m.path} className="relative" onMouseEnter={()=>setHover(m.path)} onMouseLeave={()=>setHover(null)}>
-              <NavLink to={m.path} title={m.label}
-                className={`group relative flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-brand-600/20 text-brand-400 shadow-glow-sm' 
-                    : 'text-dim hover:text-gray-300 hover:bg-white/[0.03]'
-                }`}>
-                <Icon className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
-                <span className={`text-[8px] font-medium transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'}`}>{m.label}</span>
-                {isActive && <div className="absolute -bottom-0.5 w-1 h-1 bg-brand-400 rounded-full shadow-glow-sm"></div>}
-              </NavLink>
-              {/* Sub-navigation popup */}
-              {m.sub && hover===m.path && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 animate-slideIn">
-                  <div className="bg-hud-panel/95 backdrop-blur-xl border border-hud-border rounded-lg shadow-panel p-1.5 min-w-[140px]">
+            <div key={m.path} className="relative">
+              {m.sub ? (
+                <button
+                  onClick={handleClick}
+                  title={m.label}
+                  className={`group relative flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-brand-600/20 text-brand-400 shadow-glow-sm' 
+                      : 'text-dim hover:text-gray-300 hover:bg-white/[0.03]'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
+                  <span className={`text-[8px] font-medium transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'}`}>{m.label}</span>
+                  {isActive && <div className="absolute -bottom-0.5 w-1 h-1 bg-brand-400 rounded-full shadow-glow-sm"></div>}
+                </button>
+              ) : (
+                <NavLink to={m.path} title={m.label}
+                  onClick={() => setOpenMenu(null)}
+                  className={`group relative flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-brand-600/20 text-brand-400 shadow-glow-sm' 
+                      : 'text-dim hover:text-gray-300 hover:bg-white/[0.03]'
+                  }`}>
+                  <Icon className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
+                  <span className={`text-[8px] font-medium transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'}`}>{m.label}</span>
+                  {isActive && <div className="absolute -bottom-0.5 w-1 h-1 bg-brand-400 rounded-full shadow-glow-sm"></div>}
+                </NavLink>
+              )}
+
+              {/* Sub-navigation popup - CLICK triggered, stays open */}
+              {m.sub && isMenuOpen && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-[9999]">
+                  <div className="bg-hud-panel/98 backdrop-blur-xl border border-hud-border rounded-xl shadow-2xl p-2 min-w-[160px]">
                     {m.sub.map(s=>(
-                      <NavLink key={s.path} to={s.path} className={`block px-3 py-1.5 text-[10px] font-mono rounded-md transition-all ${location.pathname===s.path?'text-brand-400 bg-brand-600/15':'text-dim hover:text-gray-200 hover:bg-white/[0.03]'}`}>
+                      <NavLink key={s.path} to={s.path} onClick={() => setOpenMenu(null)}
+                        className={`block px-3 py-2 text-[11px] font-mono rounded-lg transition-all ${location.pathname===s.path?'text-brand-400 bg-brand-600/15 font-medium':'text-gray-300 hover:text-white hover:bg-white/[0.05]'}`}>
                         {s.label}
                       </NavLink>
                     ))}
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-hud-panel border-r border-b border-hud-border rotate-45"></div>
+                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-hud-panel/98 border-r border-b border-hud-border rotate-45"></div>
                   </div>
                 </div>
               )}
