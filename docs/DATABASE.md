@@ -191,3 +191,17 @@
 
 **TOTAL ATUALIZADO: ~85 tabelas**
 
+
+### Planejamento — Apropriação (3 tabelas)
+- `centro_custo`
+- `apropriacao_rota`
+- `apropriacao_rota_modelo`
+
+### Controle — Fechamento de Período (4 tabelas)
+- `tipo_fechamento`
+- `fechamento_periodo`
+- `fechamento_historico`
+- `fechamento_edicao`
+
+**TOTAL ATUALIZADO: ~92 tabelas**
+
