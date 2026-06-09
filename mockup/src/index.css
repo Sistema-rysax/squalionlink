@@ -2,19 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: #32324a #12121a;
-  }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #12121a; }
-  ::-webkit-scrollbar-thumb { background: #32324a; border-radius: 3px; }
+:root, [data-theme="dark"] {
+  --bg-base: #0a0a0f;
+  --surface-1: #12121a;
+  --surface-2: #1a1a2e;
+  --surface-3: #2a2a4a;
+  --surface-4: #3a3a5a;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: #2a2a4a;
 }
 
-.leaflet-container {
-  background: #0a0a0f !important;
+[data-theme="light"] {
+  --bg-base: #f8fafc;
+  --surface-1: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e2e8f0;
+  --surface-4: #cbd5e1;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
 }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+@layer base {
+  .bg-base { background: var(--bg-base); }
+  .bg-surface-1 { background: var(--surface-1); }
+  .bg-surface-2 { background: var(--surface-2); }
+  .bg-surface-3 { background: var(--surface-3); }
+  .bg-surface-4 { background: var(--surface-4); }
+  .border-surface-3 { border-color: var(--border); }
+  .border-surface-4 { border-color: var(--surface-4); }
+  .text-primary { color: var(--text-primary); }
+  .text-secondary { color: var(--text-secondary); }
+}
+
+[data-theme="light"] .text-white { color: #1e293b; }
+[data-theme="light"] .text-gray-200 { color: #334155; }
+[data-theme="light"] .text-gray-300 { color: #475569; }
+[data-theme="light"] .text-gray-400 { color: #64748b; }
+[data-theme="light"] .text-gray-500 { color: #94a3b8; }
+[data-theme="light"] .text-gray-600 { color: #cbd5e1; }
+[data-theme="light"] .hover\:text-gray-200:hover { color: #1e293b; }
+[data-theme="light"] .hover\:text-gray-300:hover { color: #334155; }
+[data-theme="light"] .hover\:bg-surface-2:hover { background: var(--surface-2); }
+[data-theme="light"] .hover\:bg-surface-3:hover { background: var(--surface-3); }
+[data-theme="light"] select option { background: white; color: #1e293b; }
+
+.leaflet-container { background: var(--bg-base) !important; }
 
 @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

@@ -43,8 +43,10 @@ const navigation = [
   { name: 'Qualidade', href: '/qualidade', icon: FlaskConical },
   { name: 'Áreas & Rotas', icon: MapPin, children: [
     { name: 'Áreas', href: '/areas' },
+    { name: 'Subáreas', href: '/areas/subareas' },
     { name: 'Materiais', href: '/areas/materiais' },
     { name: 'Rotas', href: '/areas/rotas' },
+    { name: 'Pontos de Acesso', href: '/areas/pontos-acesso' },
   ]},
   { name: 'Planejamento', icon: Calendar, children: [
     { name: 'Apropriação', href: '/planejamento/apropriacao' },

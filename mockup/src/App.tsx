@@ -31,8 +31,10 @@ import Pecas from './pages/manutencao/Pecas'
 import Qualidade from './pages/qualidade/Qualidade'
 import Relatorios from './pages/relatorios/Relatorios'
 import Areas from './pages/areas/Areas'
+import Subareas from './pages/areas/Subareas'
 import Materiais from './pages/areas/Materiais'
 import Rotas from './pages/areas/Rotas'
+import PontosAcesso from './pages/areas/PontosAcesso'
 import Usuarios from './pages/admin/Usuarios'
 import Perfis from './pages/admin/Perfis'
 import ConfigTenant from './pages/admin/ConfigTenant'
@@ -90,8 +92,10 @@ export default function App() {
         <Route path="qualidade" element={<Qualidade />} />
         {/* Áreas & Rotas */}
         <Route path="areas" element={<Areas />} />
+        <Route path="areas/subareas" element={<Subareas />} />
         <Route path="areas/materiais" element={<Materiais />} />
         <Route path="areas/rotas" element={<Rotas />} />
+        <Route path="areas/pontos-acesso" element={<PontosAcesso />} />
         {/* Planejamento */}
         <Route path="planejamento/apropriacao" element={<Apropriacao />} />
         <Route path="planejamento/fechamento" element={<Fechamento />} />
