@@ -168,3 +168,26 @@
 - `audit_log`
 
 **TOTAL: ~55 tabelas**
+
+
+---
+
+## Adições Recentes (ver HARDWARE-TURNO-MODELO.md para detalhes)
+
+### Hardware (3 tabelas)
+- `tipo_hardware`
+- `hardware`
+- `hardware_historico`
+
+### Modelo Enriquecido (3 tabelas novas)
+- `checklist_grupo_modelo` (substitui checklist_item_modelo)
+- `modelo_fator_enchimento`
+- `modelo_compatibilidade`
+
+### Regime de Turno (3 tabelas)
+- `regime_turno`
+- `regime_turno_calendario`
+- `equipamento_regime_turno`
+
+**TOTAL ATUALIZADO: ~85 tabelas**
+
