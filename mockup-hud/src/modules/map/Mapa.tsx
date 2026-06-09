@@ -132,9 +132,7 @@ const areas = [
 ]
 
 const baseMaps = [
-  { id: 'dark', label: 'Escuro', url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' },
   { id: 'satellite', label: 'Satelite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' },
-  { id: 'topo', label: 'Topografia', url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png' },
 ]
 
 /* ─── MAP CONTEXT ─── */
@@ -153,7 +151,7 @@ function FlyTo({ target }: { target: { lat: number; lng: number } | null }) {
 /* ─── MAIN EXPORT ─── */
 export default function Mapa() {
   const [selectedEquip, setSelectedEquip] = useState<any>(null)
-  const [baseMap, setBaseMap] = useState('dark')
+  const [baseMap, setBaseMap] = useState('satellite')
   const [layers, setLayers] = useState({ equipamentos: true, areas: true, pontos: true })
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number } | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -241,7 +239,7 @@ export default function Mapa() {
       {/* CENTER: Map */}
       <div ref={mapContainerRef} className="flex-1 relative">
         {mapMode === '3d' && <CesiumMap onSelectEquip={selectEquip} selectedEquip={selectedEquip} flyTarget={flyTarget} />}
-        {mapMode === '2d' && <MapContainer center={[-20.153, -43.971]} zoom={14} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
+        {mapMode === '2d' && <MapContainer center={[-20.155, -43.974]} zoom={15} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
           <TileLayer url={currentBase.url} attribution="" />
           <FlyTo target={flyTarget} />
 
@@ -300,11 +298,7 @@ export default function Mapa() {
         </button>
         {layerPanel && (
           <div className="absolute top-14 right-3 z-[400] bg-hud-panel/95 backdrop-blur-xl border border-hud-border rounded-xl p-3 min-w-[160px] shadow-2xl">
-            <h4 className="text-[9px] uppercase tracking-widest text-dim mb-2 font-display">Base</h4>
-            {baseMaps.map(b => (
-              <button key={b.id} onClick={() => setBaseMap(b.id)} className={`block w-full text-left px-2 py-1.5 rounded text-[10px] font-mono transition-all ${baseMap === b.id ? 'text-brand-400 bg-brand-600/10' : 'text-dim hover:text-gray-300 hover:bg-white/[0.03]'}`}>{b.label}</button>
-            ))}
-            <h4 className="text-[9px] uppercase tracking-widest text-dim mb-2 mt-3 font-display">Camadas</h4>
+            <h4 className="text-[9px] uppercase tracking-widest text-dim mb-2 font-display">Camadas</h4>
             {Object.entries(layers).map(([k, v]) => (
               <button key={k} onClick={() => setLayers(p => ({ ...p, [k]: !p[k as keyof typeof p] }))} className="flex items-center gap-2 w-full px-2 py-1.5 rounded hover:bg-white/[0.03] transition-all">
                 {v ? <Eye className="w-3 h-3 text-brand-400" /> : <EyeOff className="w-3 h-3 text-dim" />}
