@@ -61,7 +61,7 @@ export default function CesiumMap({ onSelectEquip, selectedEquip, flyTarget }: P
 
     // Fly to mine area
     viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(-43.974, -20.155, 3000),
+      destination: Cesium.Cartesian3.fromDegrees(-43.973, -20.152, 2000),
       orientation: {
         heading: Cesium.Math.toRadians(0),
         pitch: Cesium.Math.toRadians(-45),

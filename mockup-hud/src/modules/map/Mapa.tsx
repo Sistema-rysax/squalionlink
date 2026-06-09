@@ -4,7 +4,7 @@ import L from 'leaflet'
 import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff, Search, X, ChevronRight, Fuel, Clock, Gauge, Activity, MapPin, Thermometer, Zap, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowUp, ArrowDown } from 'lucide-react'
 import DigitalTwin from '../../components/map/DigitalTwin'
-import CesiumMap from '../../components/map/CesiumMap'
+// import CesiumMap from '../../components/map/CesiumMap' // Available for future 3D mode
 import 'leaflet/dist/leaflet.css'
 
 /* ─── EXTENDED SNAPSHOT DATA ─── */
@@ -157,7 +157,6 @@ export default function Mapa() {
   const [searchTerm, setSearchTerm] = useState('')
   const [layerPanel, setLayerPanel] = useState(false)
   const [twinOpen, setTwinOpen] = useState(false)
-  const [mapMode, setMapMode] = useState<'2d' | '3d'>('2d')
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
@@ -238,8 +237,7 @@ export default function Mapa() {
 
       {/* CENTER: Map */}
       <div ref={mapContainerRef} className="flex-1 relative">
-        {mapMode === '3d' && <CesiumMap onSelectEquip={selectEquip} selectedEquip={selectedEquip} flyTarget={flyTarget} />}
-        {mapMode === '2d' && <MapContainer center={[-20.155, -43.974]} zoom={15} className="h-full w-full" zoomControl={false} style={{ background: '#0a0c12' }} ref={mapRef}>
+        <MapContainer center={[-20.152, -43.973]} zoom={16} className="h-full w-full" zoomControl={false} style={{ background: '#1a1f2e' }} ref={mapRef}>
           <TileLayer url={currentBase.url} attribution="" />
           <FlyTo target={flyTarget} />
 
@@ -254,7 +252,7 @@ export default function Mapa() {
           {layers.equipamentos && equipamentos.map(e => {
             const color = statusColor(e.status)
             const isSelected = selectedEquip?.id === e.id
-            const size = isSelected ? 40 : 32
+            const size = isSelected ? 32 : 22
             const grupo = e.grupo?.toLowerCase() || ''
             // SVG icon based on equipment type
             let svgBody = ''
@@ -273,8 +271,8 @@ export default function Mapa() {
             }
             const svg = `<svg width="${size}" height="${size}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">${isSelected ? '<circle cx="16" cy="16" r="15" fill="none" stroke="' + color + '" stroke-width="2" opacity="0.6"><animate attributeName="r" values="14;16;14" dur="1.5s" repeatCount="indefinite"/></circle>' : ''}${svgBody}</svg>`
             const icon = L.divIcon({
-              html: `<div style="position:relative">${svg}<div style="position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:8px;font-family:JetBrains Mono;color:white;text-shadow:0 0 3px black,0 0 3px black;white-space:nowrap;font-weight:bold">${e.codigo}</div></div>`,
-              iconSize: [size, size + 12],
+              html: `<div style="position:relative">${svg}${isSelected ? '<div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);font-size:9px;font-family:JetBrains Mono;color:white;text-shadow:0 0 3px black,0 0 3px black;white-space:nowrap;font-weight:bold;background:rgba(0,0,0,0.7);padding:0 3px;border-radius:2px">' + e.codigo + '</div>' : ''}</div>`,
+              iconSize: [size, size + (isSelected ? 14 : 0)],
               iconAnchor: [size/2, size/2],
               className: 'equip-marker'
             })
@@ -284,13 +282,7 @@ export default function Mapa() {
               </Marker>
             )
           })}
-        </MapContainer>}
-
-        {/* 2D/3D toggle */}
-        <div className="absolute top-3 left-3 z-[400] flex bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded-lg overflow-hidden">
-          <button onClick={() => setMapMode('2d')} className={`px-3 py-1.5 text-[9px] font-mono uppercase transition-all ${mapMode === '2d' ? 'bg-brand-600/20 text-brand-400' : 'text-dim hover:text-gray-300'}`}>2D</button>
-          <button onClick={() => setMapMode('3d')} className={`px-3 py-1.5 text-[9px] font-mono uppercase transition-all ${mapMode === '3d' ? 'bg-brand-600/20 text-brand-400' : 'text-dim hover:text-gray-300'}`}>3D Terrain</button>
-        </div>
+        </MapContainer>
 
         {/* Layer control */}
         <button onClick={() => setLayerPanel(!layerPanel)} className="absolute top-3 right-3 z-[400] w-9 h-9 bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded-lg flex items-center justify-center hover:bg-hud-panel transition-all shadow-lg">
