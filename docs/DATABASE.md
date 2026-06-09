@@ -214,3 +214,21 @@
 - `sync_fila_upload`
 
 **TOTAL ATUALIZADO: ~97 tabelas**
+
+### Qualidade (4 tabelas)
+- `elemento_qualidade`
+- `faixa_granulometrica`
+- `subarea_qualidade`
+- `subarea_granulometria`
+
+### Importacao (2 tabelas)
+- `importacao`
+- `importacao_linha`
+
+### Pilha / Estoque (4 tabelas)
+- `pilha_estoque`
+- `pilha_qualidade_atual`
+- `pilha_movimentacao`
+- `pilha_qualidade_historico` (partitioned)
+
+**TOTAL ATUALIZADO: ~107 tabelas**
