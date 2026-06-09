@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { ToastContainer } from './components/ui/Toast'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
 import Mapa from './pages/mapa/Mapa'
@@ -28,6 +29,8 @@ import Login from './pages/Login'
 
 export default function App() {
   return (
+    <>
+    <ToastContainer />
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Layout />}>
@@ -58,5 +61,6 @@ export default function App() {
         <Route path="planejamento/fechamento" element={<Fechamento />} />
       </Route>
     </Routes>
+    </>
   )
 }
