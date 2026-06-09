@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useRef, useEffect, createContext, useContext } from 'react'
+import { useState, useMemo, useCallback, useRef, useEffect, createContext, useContext, lazy, Suspense } from 'react'
 import { MapContainer, TileLayer, Marker, Polygon, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff, Search, X, ChevronRight, Fuel, Clock, Gauge, Activity, MapPin, Thermometer, Zap, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowUp, ArrowDown } from 'lucide-react'
 import DigitalTwin from '../../components/map/DigitalTwin'
-import CesiumMap from '../../components/map/CesiumMap'
+// const CesiumMap = lazy(() => import('../../components/map/CesiumMap')) // Disabled: requires CDN setup
 import 'leaflet/dist/leaflet.css'
 
 /* ─── EXTENDED SNAPSHOT DATA ─── */
@@ -244,7 +244,7 @@ export default function Mapa() {
 
       {/* CENTER: Map */}
       <div ref={mapContainerRef} className="flex-1 relative">
-        {mapMode === '3d' && <CesiumMap onSelectEquip={selectEquip} selectedEquip={selectedEquip} flyTarget={flyTarget} />}
+        {mapMode === '3d' && <div className="h-full w-full flex items-center justify-center bg-hud-bg"><div className="text-center"><span className="text-sm font-mono text-brand-400 block mb-2">3D Terrain</span><span className="text-[10px] text-dim">Cesium Ion configurado. Requer deploy com CDN assets.</span></div></div>}
         {mapMode === '2d' && <MapContainer center={[-20.152, -43.973]} zoom={16} className="h-full w-full" zoomControl={false} style={{ background: '#1a1f2e' }} ref={mapRef}>
           <TileLayer url={currentBase.url} attribution="" />
           <FlyTo target={flyTarget} />
