@@ -37,7 +37,7 @@ export default function LiveCounter({ value, label, unit, decimals = 0, trend, s
   return (
     <div className={`flex flex-col items-center gap-1 ${flash ? 'data-flash' : ''}`}>
       <div className="flex items-baseline gap-1">
-        <span className={`font-mono font-bold text-gray-100 tabular-nums ${sizeClasses[size]}`}>
+        <span className={`font-mono font-bold text-gray-200 tabular-nums ${sizeClasses[size]}`}>
           {display.toLocaleString('pt-BR', { maximumFractionDigits: decimals })}
         </span>
         {unit && <span className="text-xs font-mono text-dim">{unit}</span>}

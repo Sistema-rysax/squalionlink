@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import ReactECharts from 'echarts-for-react'
+import { useChartTheme } from '../../hooks/useChartTheme'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import { FormSection } from '../../components/controls/FormFields'
@@ -14,15 +15,16 @@ const ciclos = [
 ]
 
 export default function Ciclos() {
+  const ct = useChartTheme()
   const [selected, setSelected] = useState<any>(null)
 
   const overviewOption = useMemo(()=>({
     backgroundColor:'transparent',
-    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#0a0c12',borderColor:'#1a2030',textStyle:{color:'#e2e8f0',fontFamily:'JetBrains Mono',fontSize:11}},
-    legend:{bottom:0,textStyle:{color:'#6b7280',fontSize:10}},
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:ct.tooltip.bg,borderColor:ct.tooltip.border,textStyle:{color:ct.tooltip.text,fontFamily:'JetBrains Mono',fontSize:11}},
+    legend:{bottom:0,textStyle:{color:ct.legend.text,fontSize:10}},
     grid:{top:20,right:20,bottom:40,left:50},
-    xAxis:{type:'category' as const,data:ciclos.map(c=>c.equip+' '+c.inicio),axisLabel:{color:'#4b5563',fontSize:9,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:'#1a2030'}}},
-    yAxis:{type:'value' as const,name:'min',axisLabel:{color:'#4b5563',fontSize:10,fontFamily:'JetBrains Mono'},splitLine:{lineStyle:{color:'#1a2030',type:'dashed' as const}}},
+    xAxis:{type:'category' as const,data:ciclos.map(c=>c.equip+' '+c.inicio),axisLabel:{color:ct.axis.label,fontSize:9,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:ct.axis.line}}},
+    yAxis:{type:'value' as const,name:'min',axisLabel:{color:ct.axis.label,fontSize:10,fontFamily:'JetBrains Mono'},splitLine:{lineStyle:{color:ct.axis.split,type:'dashed' as const}}},
     series:[
       {name:'Fila',type:'bar',stack:'total',data:ciclos.map(c=>c.fila),itemStyle:{color:'#f59e0b'}},
       {name:'Carga',type:'bar',stack:'total',data:ciclos.map(c=>c.carga),itemStyle:{color:'#2563eb'}},
@@ -39,10 +41,10 @@ export default function Ciclos() {
     const cores = ['#f59e0b','#2563eb','#22c55e','#a855f7','#06b6d4']
     return {
       backgroundColor:'transparent',
-      tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#0a0c12',borderColor:'#1a2030',textStyle:{color:'#e2e8f0',fontFamily:'JetBrains Mono',fontSize:11}},
+      tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:ct.tooltip.bg,borderColor:ct.tooltip.border,textStyle:{color:ct.tooltip.text,fontFamily:'JetBrains Mono',fontSize:11}},
       grid:{top:10,right:30,bottom:20,left:100},
-      xAxis:{type:'value' as const,axisLabel:{color:'#4b5563',fontSize:10,fontFamily:'JetBrains Mono',formatter:'{value} min'},splitLine:{lineStyle:{color:'#1a2030',type:'dashed' as const}}},
-      yAxis:{type:'category' as const,data:etapas,axisLabel:{color:'#9ca3af',fontSize:11,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:'#1a2030'}}},
+      xAxis:{type:'value' as const,axisLabel:{color:ct.axis.label,fontSize:10,fontFamily:'JetBrains Mono',formatter:'{value} min'},splitLine:{lineStyle:{color:ct.axis.split,type:'dashed' as const}}},
+      yAxis:{type:'category' as const,data:etapas,axisLabel:{color:'#9ca3af',fontSize:11,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:ct.axis.line}}},
       series:[{type:'bar',data:valores.map((v,i)=>({value:v,itemStyle:{color:cores[i],borderRadius:[0,4,4,0]}})),barWidth:'60%'}]
     }
   },[selected])

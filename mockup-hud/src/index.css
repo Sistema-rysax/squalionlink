@@ -165,6 +165,7 @@ body {
 [data-theme="light"] .text-warn { color:var(--warn) !important; }
 [data-theme="light"] .text-crit { color:var(--crit) !important; }
 [data-theme="light"] .text-dim { color:var(--dim) !important; }
+[data-theme="light"] .text-gray-100 { color:#1e293b !important; }
 [data-theme="light"] .text-gray-200 { color:#334155 !important; }
 [data-theme="light"] .text-gray-300 { color:#475569 !important; }
 [data-theme="light"] .text-gray-400 { color:#64748b !important; }
@@ -192,6 +193,22 @@ body {
 [data-theme="light"] .shadow-glow-sm { box-shadow:0 1px 4px rgba(37,99,235,0.1) !important; }
 [data-theme="light"] .shadow-panel { box-shadow:0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03) !important; }
 [data-theme="light"] .placeholder-dim\/60::placeholder { color:rgba(148,163,184,0.6) !important; }
+
+/* Light mode: ECharts canvas backgrounds */
+[data-theme="light"] .bg-hud-panel\/80 { background-color:rgba(255,255,255,0.85) !important; }
+[data-theme="light"] .font-display { color:var(--text-secondary); }
+
+/* Light mode: NavDock */
+[data-theme="light"] nav .bg-hud-panel\/95 { background-color:rgba(255,255,255,0.95) !important; border-color:#e2e8f0 !important; box-shadow:0 -2px 12px rgba(0,0,0,0.06) !important; }
+
+/* Light mode: Drawer */
+[data-theme="light"] .animate-slideIn { box-shadow:0 0 24px rgba(0,0,0,0.08); }
+
+/* Light mode: DataTable hover rows */
+[data-theme="light"] tr:hover td { background-color:rgba(37,99,235,0.02); }
+
+/* Light mode: ensure gauge value text is visible */  
+[data-theme="light"] .tabular-nums { color:var(--text-primary) !important; }
 
 /* Light mode: ensure all text on dark bg classes are readable */
 [data-theme="light"] input, [data-theme="light"] select, [data-theme="light"] textarea {

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import ReactECharts from 'echarts-for-react'
+import { useChartTheme } from '../../hooks/useChartTheme'
 import DataTable from '../../components/panels/DataTable'
 import Drawer from '../../components/panels/Drawer'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
@@ -15,6 +16,7 @@ const pilhas = [
 const emptyPilha = { nome:'', material:'ROM', fe:'', sio2:'', al2o3:'', mn:'', volume:'' }
 
 export default function Qualidade() {
+  const ct = useChartTheme()
   const [data, setData] = useState(pilhas)
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<any>(null)
@@ -32,13 +34,13 @@ export default function Qualidade() {
 
   const qualityChart = useMemo(()=>({
     backgroundColor:'transparent',
-    tooltip:{trigger:'axis',backgroundColor:'#0a0c12',borderColor:'#1a2030',textStyle:{color:'#e2e8f0',fontFamily:'JetBrains Mono',fontSize:11}},
-    legend:{bottom:0,textStyle:{color:'#6b7280',fontSize:10}},
+    tooltip:{trigger:'axis',backgroundColor:ct.tooltip.bg,borderColor:ct.tooltip.border,textStyle:{color:ct.tooltip.text,fontFamily:'JetBrains Mono',fontSize:11}},
+    legend:{bottom:0,textStyle:{color:ct.legend.text,fontSize:10}},
     grid:{top:30,right:20,bottom:40,left:50},
-    xAxis:{type:'category' as const,data:data.filter(p=>p.status==='ATIVA').map(p=>p.nome),axisLabel:{color:'#4b5563',fontSize:10,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:'#1a2030'}}},
-    yAxis:{type:'value' as const,name:'%',axisLabel:{color:'#4b5563',fontSize:10,fontFamily:'JetBrains Mono'},splitLine:{lineStyle:{color:'#1a2030',type:'dashed' as const}}},
+    xAxis:{type:'category' as const,data:data.filter(p=>p.status==='ATIVA').map(p=>p.nome),axisLabel:{color:ct.axis.label,fontSize:10,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:ct.axis.line}}},
+    yAxis:{type:'value' as const,name:'%',axisLabel:{color:ct.axis.label,fontSize:10,fontFamily:'JetBrains Mono'},splitLine:{lineStyle:{color:ct.axis.split,type:'dashed' as const}}},
     series:[
-      {name:'Fe',type:'bar',data:data.filter(p=>p.status==='ATIVA').map(p=>p.fe),itemStyle:{color:'#2563eb'}},
+      {name:'Fe',type:'bar',data:data.filter(p=>p.status==='ATIVA').map(p=>p.fe),itemStyle:{color:ct.brand}},
       {name:'SiO₂',type:'bar',data:data.filter(p=>p.status==='ATIVA').map(p=>p.sio2),itemStyle:{color:'#f59e0b'}},
       {name:'Al₂O₃',type:'bar',data:data.filter(p=>p.status==='ATIVA').map(p=>p.al2o3),itemStyle:{color:'#a855f7'}},
       {name:'Mn',type:'bar',data:data.filter(p=>p.status==='ATIVA').map(p=>p.mn),itemStyle:{color:'#06b6d4'}},

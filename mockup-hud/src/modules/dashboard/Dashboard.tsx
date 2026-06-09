@@ -6,35 +6,49 @@ import LiveCounter from '../../components/indicators/LiveCounter'
 import SparkLine from '../../components/indicators/SparkLine'
 import { equipamentos, producaoHora, dfHora, horas, alertas } from '../../mock/data'
 import { Truck, AlertTriangle, Fuel } from 'lucide-react'
+import { useTheme } from '../../contexts/ThemeContext'
 
 export default function Dashboard() {
   const [tick, setTick] = useState(0)
+  const { theme } = useTheme()
   useEffect(() => { const t = setInterval(()=>setTick(p=>p+1), 3000); return ()=>clearInterval(t) }, [])
 
   const operando = equipamentos.filter(e=>e.status==='OPERANDO').length
   const parado = equipamentos.filter(e=>e.status==='PARADO').length
   const manut = equipamentos.filter(e=>e.status==='MANUTENCAO').length
 
+  const isDark = theme === 'dark'
+  const chartColors = useMemo(() => ({
+    tooltip: { bg: isDark ? '#0a0c12' : '#ffffff', border: isDark ? '#1a2030' : '#e2e8f0', text: isDark ? '#e2e8f0' : '#1e293b' },
+    axis: { label: isDark ? '#4b5563' : '#64748b', line: isDark ? '#1a2030' : '#e2e8f0', split: isDark ? '#1a2030' : '#f1f5f9' },
+    brand: isDark ? '#2563eb' : '#1d4ed8',
+    brandArea: isDark ? 'rgba(37,99,235,0.3)' : 'rgba(37,99,235,0.12)',
+    brandAreaEnd: isDark ? 'rgba(37,99,235,0)' : 'rgba(37,99,235,0)',
+    barTop: isDark ? '#22c55e' : '#16a34a',
+    barBottom: isDark ? 'rgba(34,197,94,0.4)' : 'rgba(22,163,74,0.2)',
+    metaLine: isDark ? 'rgba(239,68,68,0.4)' : 'rgba(220,38,38,0.5)',
+  }), [isDark])
+
   const prodOption = useMemo(()=>({
     backgroundColor:'transparent',
-    tooltip:{trigger:'axis',backgroundColor:'#0a0c12',borderColor:'#1a2030',textStyle:{color:'#e2e8f0',fontFamily:'JetBrains Mono',fontSize:11}},
+    tooltip:{trigger:'axis',backgroundColor:chartColors.tooltip.bg,borderColor:chartColors.tooltip.border,textStyle:{color:chartColors.tooltip.text,fontFamily:'JetBrains Mono',fontSize:11}},
     grid:{top:20,right:16,bottom:24,left:45},
-    xAxis:{type:'category' as const,data:horas,axisLabel:{color:'#4b5563',fontSize:10,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:'#1a2030'}},splitLine:{show:false}},
-    yAxis:{type:'value' as const,axisLabel:{color:'#4b5563',fontSize:10,fontFamily:'JetBrains Mono'},splitLine:{lineStyle:{color:'#1a2030',type:'dashed' as const}},axisLine:{show:false}},
+    xAxis:{type:'category' as const,data:horas,axisLabel:{color:chartColors.axis.label,fontSize:10,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:chartColors.axis.line}},splitLine:{show:false}},
+    yAxis:{type:'value' as const,axisLabel:{color:chartColors.axis.label,fontSize:10,fontFamily:'JetBrains Mono'},splitLine:{lineStyle:{color:chartColors.axis.split,type:'dashed' as const}},axisLine:{show:false}},
     series:[
-      {type:'line',data:producaoHora,smooth:true,symbol:'none',lineStyle:{color:'#2563eb',width:2},areaStyle:{color:{type:'linear' as const,x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(37,99,235,0.3)'},{offset:1,color:'rgba(37,99,235,0)'}]}}},
-      {type:'line',data:Array(12).fill(1400),symbol:'none',lineStyle:{color:'rgba(239,68,68,0.4)',type:'dashed' as const,width:1}}
+      {type:'line',data:producaoHora,smooth:true,symbol:'none',lineStyle:{color:chartColors.brand,width:2},areaStyle:{color:{type:'linear' as const,x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:chartColors.brandArea},{offset:1,color:chartColors.brandAreaEnd}]}}},
+      {type:'line',data:Array(12).fill(1400),symbol:'none',lineStyle:{color:chartColors.metaLine,type:'dashed' as const,width:1}}
     ]
-  }),[])
+  }),[chartColors])
 
   const dfOption = useMemo(()=>({
     backgroundColor:'transparent',
-    tooltip:{trigger:'axis',backgroundColor:'#0a0c12',borderColor:'#1a2030',textStyle:{color:'#e2e8f0',fontFamily:'JetBrains Mono',fontSize:11}},
+    tooltip:{trigger:'axis',backgroundColor:chartColors.tooltip.bg,borderColor:chartColors.tooltip.border,textStyle:{color:chartColors.tooltip.text,fontFamily:'JetBrains Mono',fontSize:11}},
     grid:{top:10,right:16,bottom:24,left:40},
-    xAxis:{type:'category' as const,data:horas,axisLabel:{color:'#4b5563',fontSize:9,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:'#1a2030'}}},
-    yAxis:{type:'value' as const,min:60,max:100,axisLabel:{color:'#4b5563',fontSize:9,fontFamily:'JetBrains Mono',formatter:'{value}%'},splitLine:{lineStyle:{color:'#1a2030',type:'dashed' as const}}},
-    series:[{type:'bar',data:dfHora,itemStyle:{color:{type:'linear' as const,x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#22c55e'},{offset:1,color:'rgba(34,197,94,0.4)'}]},borderRadius:[2,2,0,0]},barWidth:'50%'}]
-  }),[])
+    xAxis:{type:'category' as const,data:horas,axisLabel:{color:chartColors.axis.label,fontSize:9,fontFamily:'JetBrains Mono'},axisLine:{lineStyle:{color:chartColors.axis.line}}},
+    yAxis:{type:'value' as const,min:60,max:100,axisLabel:{color:chartColors.axis.label,fontSize:9,fontFamily:'JetBrains Mono',formatter:'{value}%'},splitLine:{lineStyle:{color:chartColors.axis.split,type:'dashed' as const}}},
+    series:[{type:'bar',data:dfHora,itemStyle:{color:{type:'linear' as const,x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:chartColors.barTop},{offset:1,color:chartColors.barBottom}]},borderRadius:[2,2,0,0]},barWidth:'50%'}]
+  }),[chartColors])
 
   return (
     <div className="grid grid-cols-12 grid-rows-[auto_1fr_1fr] gap-3 h-full">
@@ -52,29 +66,29 @@ export default function Dashboard() {
                 <div className="flex items-center gap-1.5"><div className="led led-warn"></div><span className="font-mono text-sm text-gray-200">{parado}</span></div>
                 <div className="flex items-center gap-1.5"><div className="led led-crit"></div><span className="font-mono text-sm text-gray-200">{manut}</span></div>
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-dim">Frota Status</span>
+              <span className="text-[9px] font-display uppercase tracking-widest text-dim">Frota Status</span>
             </div>
-            <LiveCounter value={35.6 + (tick % 3)} label="Vel. Média" unit="km/h" decimals={1} />
-            <LiveCounter value={4230 + tick * 8} label="Consumo Dia" unit="L" />
+            <LiveCounter value={35.6} label="Vel. Média" unit="km/h" decimals={1} />
+            <LiveCounter value={4230 + tick * 5} label="Consumo Dia" unit="L" />
           </div>
         </Panel>
       </div>
 
-      {/* Row 2: Charts */}
+      {/* Row 2: Production + DF */}
       <div className="col-span-7">
         <Panel title="Produção / Hora" status="info" subtitle="META 1.400 ton" className="h-full">
-          <ReactECharts option={prodOption} style={{height:200}} />
+          <ReactECharts option={prodOption} style={{height:'100%',minHeight:200}} opts={{renderer:'svg'}} key={'prod-'+theme} />
         </Panel>
       </div>
       <div className="col-span-5">
         <Panel title="DF% / Hora" status="ok" className="h-full">
-          <ReactECharts option={dfOption} style={{height:200}} />
+          <ReactECharts option={dfOption} style={{height:'100%',minHeight:200}} opts={{renderer:'svg'}} key={'df-'+theme} />
         </Panel>
       </div>
 
-      {/* Row 3: Fleet + Alerts */}
+      {/* Row 3: Fleet Table + Alerts */}
       <div className="col-span-7">
-        <Panel title="Frota — Status Ao Vivo" status="ok" subtitle={equipamentos.length + ' EQUIPAMENTOS'} className="h-full" noPad>
+        <Panel title="Frota — Status ao Vivo" status="ok" subtitle={equipamentos.length + ' EQUIPAMENTOS'} className="h-full" noPad>
           <div className="divide-y divide-hud-border/30">
             {equipamentos.map(e => (
               <div key={e.id} className="flex items-center gap-3 px-4 py-2 hover:bg-white/[0.02] transition-colors group">
@@ -82,7 +96,7 @@ export default function Dashboard() {
                 <span className="font-mono text-xs text-brand-400 w-14">{e.codigo}</span>
                 <span className="text-xs text-gray-400 w-24 truncate">{e.atividade || '—'}</span>
                 <span className="text-xs text-dim w-24 truncate">{e.operador || '—'}</span>
-                <SparkLine data={[30,35,42,38,e.vel,e.vel+2,e.vel-1]} color={e.status==='OPERANDO'?'#22c55e':'#4b5563'} width={60} height={16} />
+                <SparkLine data={[30,35,42,38,e.vel,e.vel+2,e.vel-1]} color={e.status==='OPERANDO'?(isDark?'#22c55e':'#16a34a'):'#94a3b8'} width={60} height={16} />
                 <span className="font-mono text-xs text-gray-300 w-16 text-right">{e.vel} km/h</span>
                 <div className="flex-1"></div>
                 <div className="flex items-center gap-1">
