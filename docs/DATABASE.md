@@ -232,3 +232,16 @@
 - `pilha_qualidade_historico` (partitioned)
 
 **TOTAL ATUALIZADO: ~107 tabelas**
+
+### Abastecimento (3 tabelas)
+- `posto_abastecimento`
+- `abastecimento`
+- `config_alerta_tanque`
+
+### Mensageria (4 tabelas)
+- `mensagem_operacional`
+- `mensagem_template`
+- `mensagem_conversa`
+- `mensagem_resposta_rapida`
+
+**TOTAL ATUALIZADO: ~114 tabelas**
