@@ -268,3 +268,12 @@
 - `usuario_sso`
 
 **TOTAL ATUALIZADO: ~127 tabelas**
+
+### Revisão/Auditoria (5 tabelas novas)
+- `combustivel`
+- `notificacao`
+- `notificacao_preferencia`
+- `audit_trail`
+- `arquivo`
+
+**TOTAL FINAL REVISADO: ~132 tabelas**
