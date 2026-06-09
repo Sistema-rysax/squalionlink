@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback, useRef, useEffect, createContext, useContext } from 'react'
-import { MapContainer, TileLayer, CircleMarker, Polygon, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Polygon, Popup, useMap } from 'react-leaflet'
+import L from 'leaflet'
 import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff, Search, X, ChevronRight, Fuel, Clock, Gauge, Activity, MapPin, Thermometer, Zap, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowUp, ArrowDown } from 'lucide-react'
+import DigitalTwin from '../../components/map/DigitalTwin'
 import 'leaflet/dist/leaflet.css'
 
 /* ─── EXTENDED SNAPSHOT DATA ─── */
@@ -154,6 +156,7 @@ export default function Mapa() {
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number } | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [layerPanel, setLayerPanel] = useState(false)
+  const [twinOpen, setTwinOpen] = useState(false)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
 
@@ -245,14 +248,40 @@ export default function Mapa() {
             </Polygon>
           ))}
 
-          {/* Equipment markers */}
-          {layers.equipamentos && equipamentos.map(e => (
-            <CircleMarker key={e.id} center={[e.lat, e.lng]} radius={selectedEquip?.id === e.id ? 10 : 7}
-              pathOptions={{ color: statusColor(e.status), fillColor: statusColor(e.status), fillOpacity: 0.9, weight: selectedEquip?.id === e.id ? 3 : 1 }}
-              eventHandlers={{ click: () => selectEquip(e) }}>
-              <Popup><div className="text-xs font-mono"><strong>{e.codigo}</strong><br/>{e.atividade || '---'}<br/>{e.vel} km/h</div></Popup>
-            </CircleMarker>
-          ))}
+          {/* Equipment markers with icons */}
+          {layers.equipamentos && equipamentos.map(e => {
+            const color = statusColor(e.status)
+            const isSelected = selectedEquip?.id === e.id
+            const size = isSelected ? 40 : 32
+            const grupo = e.grupo?.toLowerCase() || ''
+            // SVG icon based on equipment type
+            let svgBody = ''
+            if (grupo.includes('caminh')) {
+              svgBody = `<rect x="8" y="4" width="16" height="24" rx="2" fill="${color}" opacity="0.85"/><rect x="10" y="4" width="12" height="8" rx="1.5" fill="${color}"/><rect x="9" y="13" width="14" height="14" rx="1" fill="${color}" opacity="0.6"/><rect x="6" y="6" width="3" height="5" rx="1" fill="rgba(0,0,0,0.5)"/><rect x="23" y="6" width="3" height="5" rx="1" fill="rgba(0,0,0,0.5)"/><rect x="6" y="20" width="3" height="5" rx="1" fill="rgba(0,0,0,0.5)"/><rect x="23" y="20" width="3" height="5" rx="1" fill="rgba(0,0,0,0.5)"/><polygon points="16,1 14,4 18,4" fill="white" opacity="0.8"/>`
+            } else if (grupo.includes('escav')) {
+              svgBody = `<rect x="4" y="10" width="6" height="18" rx="3" fill="rgba(0,0,0,0.4)"/><rect x="22" y="10" width="6" height="18" rx="3" fill="rgba(0,0,0,0.4)"/><ellipse cx="16" cy="18" rx="8" ry="9" fill="${color}" opacity="0.85"/><rect x="12" y="13" width="8" height="7" rx="2" fill="${color}"/><line x1="16" y1="12" x2="16" y2="2" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="2" r="2" fill="${color}"/>`
+            } else if (grupo.includes('moto')) {
+              svgBody = `<rect x="12" y="3" width="8" height="26" rx="2" fill="${color}" opacity="0.85"/><rect x="6" y="16" width="20" height="3" rx="1" fill="${color}" opacity="0.7"/><rect x="13" y="20" width="6" height="6" rx="1" fill="${color}"/><circle cx="11" cy="6" r="2" fill="rgba(0,0,0,0.4)"/><circle cx="21" cy="6" r="2" fill="rgba(0,0,0,0.4)"/><circle cx="11" cy="26" r="2.5" fill="rgba(0,0,0,0.4)"/><circle cx="21" cy="26" r="2.5" fill="rgba(0,0,0,0.4)"/>`
+            } else if (grupo.includes('perf')) {
+              svgBody = `<rect x="5" y="12" width="5" height="16" rx="2.5" fill="rgba(0,0,0,0.4)"/><rect x="22" y="12" width="5" height="16" rx="2.5" fill="rgba(0,0,0,0.4)"/><rect x="9" y="10" width="14" height="18" rx="2" fill="${color}" opacity="0.85"/><rect x="14" y="1" width="4" height="12" rx="1" fill="${color}" opacity="0.9"/><circle cx="16" cy="2" r="1.5" fill="white" opacity="0.6"/>`
+            } else if (grupo.includes('trat')) {
+              svgBody = `<rect x="4" y="8" width="6" height="20" rx="3" fill="rgba(0,0,0,0.4)"/><rect x="22" y="8" width="6" height="20" rx="3" fill="rgba(0,0,0,0.4)"/><rect x="9" y="10" width="14" height="16" rx="2" fill="${color}" opacity="0.85"/><rect x="3" y="5" width="26" height="4" rx="1" fill="${color}" opacity="0.7"/>`
+            } else {
+              svgBody = `<rect x="8" y="4" width="16" height="24" rx="2" fill="${color}" opacity="0.85"/><rect x="10" y="4" width="12" height="8" rx="1.5" fill="${color}"/><polygon points="16,1 14,4 18,4" fill="white" opacity="0.8"/>`
+            }
+            const svg = `<svg width="${size}" height="${size}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">${isSelected ? '<circle cx="16" cy="16" r="15" fill="none" stroke="' + color + '" stroke-width="2" opacity="0.6"><animate attributeName="r" values="14;16;14" dur="1.5s" repeatCount="indefinite"/></circle>' : ''}${svgBody}</svg>`
+            const icon = L.divIcon({
+              html: `<div style="position:relative">${svg}<div style="position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:8px;font-family:JetBrains Mono;color:white;text-shadow:0 0 3px black,0 0 3px black;white-space:nowrap;font-weight:bold">${e.codigo}</div></div>`,
+              iconSize: [size, size + 12],
+              iconAnchor: [size/2, size/2],
+              className: 'equip-marker'
+            })
+            return (
+              <Marker key={e.id} position={[e.lat, e.lng]} icon={icon} eventHandlers={{ click: () => selectEquip(e) }}>
+                <Popup><div className="text-xs font-mono"><strong>{e.codigo}</strong><br/>{e.atividade || '---'}<br/>{e.vel} km/h</div></Popup>
+              </Marker>
+            )
+          })}
         </MapContainer>
 
         {/* Layer control */}
@@ -286,6 +315,7 @@ export default function Mapa() {
                 <div className={`w-3 h-3 rounded-full ${selectedEquip.status === 'OPERANDO' ? 'bg-green-400 animate-pulse' : selectedEquip.status === 'PARADO' ? 'bg-amber-400' : 'bg-red-400'}`}></div>
                 <span className="text-base font-display font-bold text-brand-400">{selectedEquip.codigo}</span>
               </div>
+              <button onClick={() => setTwinOpen(true)} className="px-2 py-1 rounded-md text-[9px] font-mono text-brand-400 border border-brand-600/30 hover:bg-brand-600/10 transition-colors" title="Digital Twin">3D Twin</button>
               <button onClick={closeSnapshot} className="p-1 rounded hover:bg-white/10 text-dim hover:text-gray-300 transition-colors"><X className="w-4 h-4" /></button>
             </div>
             <div className="flex items-center gap-2 mt-1">
@@ -401,6 +431,11 @@ export default function Mapa() {
             </section>
           </div>
         </div>
+      )}
+
+      {/* Digital Twin Modal */}
+      {twinOpen && selectedEquip && snap && (
+        <DigitalTwin equip={selectedEquip} snap={snap} onClose={() => setTwinOpen(false)} />
       )}
     </div>
   )

@@ -396,6 +396,12 @@ body {
   display: none !important;
 }
 
+/* Equipment markers on map */
+.equip-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
 /* Active tab indicator */
 .dockview-theme-dark .dv-tab.dv-active-tab {
   border-bottom: 2px solid var(--brand-400) !important;
