@@ -80,7 +80,7 @@ function ColumnFilter({ column, data, activeFilter, onFilter, onClose }: {
         <button onClick={clearAll} className="text-[9px] font-mono text-dim hover:text-crit">Limpar</button>
       </div>
       {/* Values list */}
-      <div className="max-h-[200px] overflow-y-auto p-1">
+      <div className="overflow-y-auto p-1" style={{ maxHeight: Math.min(filteredValues.length * 28 + 8, 200) }}>
         {filteredValues.map(v => (
           <label key={v} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-white/[0.03] cursor-pointer">
             <input type="checkbox" checked={selected.has(v)} onChange={() => toggleValue(v)} className="w-3 h-3 rounded border-hud-border accent-brand-400" />
