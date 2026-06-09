@@ -1,0 +1,170 @@
+# 📊 Modelagem de Dados
+
+## Convenções
+
+| Convenção | Padrão |
+|-----------|--------|
+| Nomes de tabela | snake_case, singular |
+| Primary Key | `id_<tabela>` BIGSERIAL |
+| Foreign Key | `id_<tabela_referenciada>` BIGINT |
+| Datas | `dt_*` TIMESTAMP WITHOUT TIME ZONE (UTC) |
+| Soft Delete | `dt_deletado TIMESTAMP` |
+| Audit | `dt_registro`, `dt_alteracao` em toda tabela |
+| Booleano | `BOOLEAN NOT NULL DEFAULT true/false` |
+| Multi-tenant | `id_tenant BIGINT NOT NULL` em toda tabela de negócio |
+| Valores monetários | `NUMERIC(12,2)` |
+| Coordenadas | `NUMERIC(10,7)` |
+
+## Diagrama de Domínios
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        PLATAFORMA                               │
+│  tenant ─── tenant_plano ─── plano ─── plano_funcionalidade     │
+│    │                                          │                 │
+│    │         usuario ─── usuario_perfil ─── perfil              │
+│    │                                      │                     │
+│    │                          perfil_funcionalidade              │
+│    │                                      │                     │
+│    │                              funcionalidade                 │
+└────┼────────────────────────────────────────────────────────────┘
+     │
+┌────▼────────────────────────────────────────────────────────────┐
+│                          FROTA                                  │
+│  contratada ←── equipamento ──→ modelo_equipamento              │
+│                     │                  │        │               │
+│                     │           fabricante   grupo_equipamento   │
+│                     │                  │                         │
+│                     │         modelo_combustivel ──→ combustivel │
+│                     │                                           │
+│              equipamento_componente                              │
+└────┬────────────────────────────────────────────────────────────┘
+     │
+┌────▼────────────────────────────────────────────────────────────┐
+│                        CHECKLIST                                 │
+│  checklist_grupo ──→ checklist_item                              │
+│       │                    │                                    │
+│       │           checklist_item_modelo ──→ modelo_equipamento   │
+│       │                                                         │
+│  checklist_execucao ──→ checklist_execucao_item                  │
+│                                │                                │
+│                       checklist_execucao_foto                    │
+└─────────────────────────────────────────────────────────────────┘
+     │
+┌────▼────────────────────────────────────────────────────────────┐
+│                       MANUTENÇÃO                                │
+│  plano_manutencao ──→ plano_manutencao_gatilho                  │
+│       │           ──→ plano_manutencao_item                     │
+│       │           ──→ plano_manutencao_modelo                   │
+│       │                                                         │
+│  programacao_manutencao ──→ ordem_servico                       │
+│  solicitacao_manutencao ──→ ordem_servico                       │
+│                                  │                              │
+│                          ordem_servico_item                      │
+│                          ordem_servico_peca                      │
+│                          ordem_servico_mao_obra                  │
+│                          ordem_servico_anexo                     │
+└─────────────────────────────────────────────────────────────────┘
+     │
+┌────▼────────────────────────────────────────────────────────────┐
+│                       OPERAÇÃO                                  │
+│  area ──→ subarea        operador ──→ operador_habilitacao      │
+│    │                        │     ──→ operador_documento        │
+│  area_tipo                turno                                 │
+│    │                                                            │
+│  rota (area_origem → area_destino)                              │
+│                                                                 │
+│  gps_posicao (partitioned)                                      │
+│  evento_operacional                                             │
+│  horimetro_leitura                                              │
+│  abastecimento                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Tabelas por Domínio
+
+### Plataforma (8 tabelas)
+- `tenant`
+- `plano`
+- `funcionalidade`
+- `plano_funcionalidade`
+- `tenant_plano`
+- `perfil`
+- `perfil_funcionalidade`
+- `usuario`
+- `usuario_perfil`
+
+### Contratada (2 tabelas)
+- `contratada`
+- `contrato_contratada`
+
+### Frota (7 tabelas)
+- `fabricante`
+- `combustivel`
+- `grupo_equipamento`
+- `modelo_equipamento`
+- `modelo_combustivel`
+- `equipamento`
+- `equipamento_componente`
+
+### Checklist (6 tabelas)
+- `checklist_grupo`
+- `checklist_item`
+- `checklist_item_modelo`
+- `checklist_execucao`
+- `checklist_execucao_item`
+- `checklist_execucao_foto`
+
+### Área & Geo (4 tabelas)
+- `area_tipo`
+- `area`
+- `subarea`
+- `rota`
+
+### Operador (4 tabelas)
+- `operador`
+- `operador_habilitacao`
+- `operador_documento`
+- `turno`
+
+### Manutenção Preventiva (5 tabelas)
+- `plano_manutencao`
+- `plano_manutencao_modelo`
+- `plano_manutencao_gatilho`
+- `plano_manutencao_item`
+- `programacao_manutencao`
+
+### Manutenção Corretiva (4 tabelas)
+- `sistema_componente`
+- `sintoma`
+- `causa_falha`
+- `solicitacao_manutencao`
+
+### Ordem de Serviço (5 tabelas)
+- `ordem_servico`
+- `ordem_servico_item`
+- `ordem_servico_peca`
+- `ordem_servico_mao_obra`
+- `ordem_servico_anexo`
+
+### Telemetria & GPS (4 tabelas)
+- `gps_posicao` (partitioned)
+- `evento_operacional`
+- `horimetro_leitura`
+- `abastecimento`
+
+### Almoxarifado (3 tabelas)
+- `peca`
+- `peca_estoque`
+- `peca_movimentacao`
+
+### Alertas (1 tabela)
+- `alerta`
+
+### i18n (1 tabela)
+- `traducao`
+
+### Auditoria (1 tabela)
+- `audit_log`
+
+**TOTAL: ~55 tabelas**
