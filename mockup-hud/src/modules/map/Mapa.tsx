@@ -4,7 +4,7 @@ import L from 'leaflet'
 import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff, Search, X, ChevronRight, Fuel, Clock, Gauge, Activity, MapPin, Thermometer, Zap, TrendingUp, AlertTriangle, CheckCircle2, BarChart3, ArrowUp, ArrowDown } from 'lucide-react'
 import DigitalTwin from '../../components/map/DigitalTwin'
-// import CesiumMap from '../../components/map/CesiumMap' // Available for future 3D mode
+import CesiumMap from '../../components/map/CesiumMap'
 import 'leaflet/dist/leaflet.css'
 
 /* ─── EXTENDED SNAPSHOT DATA ─── */
@@ -157,6 +157,7 @@ export default function Mapa() {
   const [searchTerm, setSearchTerm] = useState('')
   const [layerPanel, setLayerPanel] = useState(false)
   const [twinOpen, setTwinOpen] = useState(false)
+  const [mapMode, setMapMode] = useState<'2d' | '3d'>('2d')
   const [infoFields, setInfoFields] = useState({
     codigo: true, status: true, conexao: true, horimetro: true,
     odometro: true, modelo: true, operador: true, atividade: true,
@@ -243,7 +244,8 @@ export default function Mapa() {
 
       {/* CENTER: Map */}
       <div ref={mapContainerRef} className="flex-1 relative">
-        <MapContainer center={[-20.152, -43.973]} zoom={16} className="h-full w-full" zoomControl={false} style={{ background: '#1a1f2e' }} ref={mapRef}>
+        {mapMode === '3d' && <CesiumMap onSelectEquip={selectEquip} selectedEquip={selectedEquip} flyTarget={flyTarget} />}
+        {mapMode === '2d' && <MapContainer center={[-20.152, -43.973]} zoom={16} className="h-full w-full" zoomControl={false} style={{ background: '#1a1f2e' }} ref={mapRef}>
           <TileLayer url={currentBase.url} attribution="" />
           <FlyTo target={flyTarget} />
 
@@ -290,7 +292,13 @@ export default function Mapa() {
               </Marker>
             )
           })}
-        </MapContainer>
+        </MapContainer>}
+
+        {/* 2D/3D toggle */}
+        <div className="absolute top-3 left-3 z-[500] flex bg-black/50 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden">
+          <button onClick={() => setMapMode('2d')} className={`px-3 py-1.5 text-[9px] font-mono uppercase font-bold transition-all ${mapMode === '2d' ? 'bg-brand-600/30 text-brand-300' : 'text-gray-500 hover:text-gray-300'}`}>2D</button>
+          <button onClick={() => setMapMode('3d')} className={`px-3 py-1.5 text-[9px] font-mono uppercase font-bold transition-all ${mapMode === '3d' ? 'bg-brand-600/30 text-brand-300' : 'text-gray-500 hover:text-gray-300'}`}>3D Terrain</button>
+        </div>
 
         {/* Floating equipment info card */}
         {selectedEquip && (

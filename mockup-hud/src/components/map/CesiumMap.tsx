@@ -4,7 +4,7 @@ import { equipamentos } from '../../mock/data'
 import { Layers, Eye, EyeOff } from 'lucide-react'
 
 // Cesium Ion access token (free tier - world terrain + imagery)
-Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlYWRiMGY5Yi1kNmRiLTRlZTktYjZiNi0zYTFjNGMxYmNhNzciLCJpZCI6MjU5LCJpYXQiOjE3MzQ1NTIwMDB9.placeholder_token'
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3YjhlM2E3MC04NDg1LTQxZGMtOTc3Ni1kNmZhMDQ5MzE1Y2UiLCJpZCI6NDQwMDgzLCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3ODA1Mjk5MjV9._6cgcIYzSisgM2LtsyrsjfHVx-DK2hnJaGBKnMv609Y'
 
 const statusColor = (s: string) => s === 'OPERANDO' ? Cesium.Color.fromCssColorString('#22c55e') : s === 'PARADO' ? Cesium.Color.fromCssColorString('#f59e0b') : Cesium.Color.fromCssColorString('#ef4444')
 
