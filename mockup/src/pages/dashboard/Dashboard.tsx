@@ -1,104 +1,112 @@
-import { TrendingUp, Truck, AlertTriangle, Gauge, Target, Clock, Fuel, Zap } from 'lucide-react'
-import { kpis, equipamentos } from '../../mock/data'
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useMemo } from 'react'
+import ReactECharts from 'echarts-for-react'
+import { useTheme } from '../../contexts/ThemeContext'
+import { equipamentos } from '../../mock/data'
+import { fmtNum } from '../../utils/format'
+import { Activity, Gauge, TrendingUp, Zap, Truck, AlertTriangle, Wind, Fuel } from 'lucide-react'
 
-const prodData = Array.from({length: 12}, (_, i) => ({ hora: `${6+i}:00`, produzido: Math.floor(800 + Math.random() * 600), meta: 1500 }))
-const dfData = Array.from({length: 12}, (_, i) => ({ hora: `${6+i}:00`, df: 75 + Math.random() * 15 }))
-const statusData = [
-  { name: 'Operando', value: kpis.equipOperando, color: '#22c55e' },
-  { name: 'Parado', value: kpis.equipParado, color: '#eab308' },
-  { name: 'Manutenção', value: kpis.equipManutencao, color: '#ef4444' },
+const kpis = [
+  { icon: Activity, label: 'Disponibilidade Física', value: 82.4, suffix: '%', trend: '+2.1%', good: true },
+  { icon: Gauge, label: 'Utilização Física', value: 71.2, suffix: '%', trend: '-1.3%', good: false },
+  { icon: TrendingUp, label: 'Produção Turno', value: 14832, suffix: 'ton', trend: '+5.4%', good: true },
+  { icon: Zap, label: 'Ciclos/Hora', value: 4.2, suffix: 'c/h', trend: null, good: true },
+  { icon: Truck, label: 'Operando', value: '7', suffix: '/10', trend: null, good: true },
+  { icon: AlertTriangle, label: 'Alertas', value: '4', suffix: 'abertos', trend: null, good: false },
+  { icon: Wind, label: 'Vel. Média', value: 35.6, suffix: 'km/h', trend: null, good: true },
+  { icon: Fuel, label: 'Consumo', value: 4230, suffix: 'L hoje', trend: null, good: true },
 ]
 
-function KPICard({ icon: Icon, label, value, unit, trend, color }: any) {
-  const colorMap: Record<string,string> = { green: 'text-green-400', blue: 'text-blue-400', purple: 'text-purple-400', cyan: 'text-cyan-400', yellow: 'text-yellow-400', orange: 'text-orange-400', violet: 'text-violet-400' }
-  return (
-    <div className="bg-surface-1 border border-surface-3 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <Icon className={`w-5 h-5 ${colorMap[color] || 'text-gray-400'}`} />
-        {trend !== undefined && trend !== 0 && <span className={`text-xs font-medium ${trend > 0 ? 'text-green-400' : 'text-red-400'}`}>{trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%</span>}
-      </div>
-      <p className="text-2xl font-bold text-white">{value}<span className="text-sm font-normal text-gray-500 ml-1">{unit}</span></p>
-      <p className="text-xs text-gray-500 mt-1">{label}</p>
-    </div>
-  )
-}
+const hours = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00']
+const prodData = [420,1180,1350,1280,1200,1100,980,1350,1200,1050,1300,900]
+const dfData = [78,82,85,80,84,88,86,92,85,87,90,88]
+const meta = 1400
 
 export default function Dashboard() {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+  
+  const textColor = isDark ? '#9ca3af' : '#64748b'
+  const axisLine = isDark ? '#2a2a4a' : '#e2e8f0'
+  const bgColor = 'transparent'
+
+  const prodOption = useMemo(() => ({
+    backgroundColor: bgColor,
+    tooltip: { trigger: 'axis', backgroundColor: isDark?'#1a1a2e':'#fff', borderColor: isDark?'#3a3a5a':'#e2e8f0', textStyle:{color:isDark?'#f3f4f6':'#1e293b'} },
+    grid: { top: 40, right: 20, bottom: 30, left: 50 },
+    xAxis: { type: 'category', data: hours, axisLine:{lineStyle:{color:axisLine}}, axisLabel:{color:textColor,fontSize:11} },
+    yAxis: { type: 'value', axisLine:{show:false}, splitLine:{lineStyle:{color:axisLine,type:'dashed'}}, axisLabel:{color:textColor,fontSize:11} },
+    series: [
+      { name:'Produção', type:'line', data:prodData, smooth:true, areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:isDark?'rgba(37,99,235,0.4)':'rgba(37,99,235,0.2)'},{offset:1,color:'rgba(37,99,235,0)'}]}}, lineStyle:{color:'#2563eb',width:2}, itemStyle:{color:'#2563eb'}, symbol:'circle', symbolSize:4 },
+      { name:'Meta', type:'line', data:Array(12).fill(meta), lineStyle:{color:'#6b7280',type:'dashed',width:1.5}, symbol:'none', tooltip:{show:false} }
+    ]
+  }), [isDark])
+
+  const statusCounts = { operando: equipamentos.filter(e=>e.status==='OPERANDO').length, parado: equipamentos.filter(e=>e.status==='PARADO').length, manutencao: equipamentos.filter(e=>e.status==='MANUTENCAO').length }
+  const pieOption = useMemo(() => ({
+    backgroundColor: bgColor,
+    tooltip: { trigger:'item', backgroundColor: isDark?'#1a1a2e':'#fff', borderColor: isDark?'#3a3a5a':'#e2e8f0', textStyle:{color:isDark?'#f3f4f6':'#1e293b'} },
+    legend: { bottom:10, textStyle:{color:textColor,fontSize:11}, itemWidth:10, itemHeight:10 },
+    series: [{ type:'pie', radius:['50%','75%'], center:['50%','45%'], avoidLabelOverlap:false, label:{show:false}, emphasis:{label:{show:false}}, data:[
+      {value:statusCounts.operando,name:`Operando (${statusCounts.operando})`,itemStyle:{color:'#22c55e'}},
+      {value:statusCounts.parado,name:`Parado (${statusCounts.parado})`,itemStyle:{color:'#f59e0b'}},
+      {value:statusCounts.manutencao,name:`Manutenção (${statusCounts.manutencao})`,itemStyle:{color:'#ef4444'}},
+    ]}]
+  }), [isDark])
+
+  const dfOption = useMemo(() => ({
+    backgroundColor: bgColor,
+    tooltip: { trigger:'axis', backgroundColor: isDark?'#1a1a2e':'#fff', borderColor: isDark?'#3a3a5a':'#e2e8f0', textStyle:{color:isDark?'#f3f4f6':'#1e293b'}, formatter:(p:any)=>`${p[0].axisValue}<br/>DF: ${p[0].value.toFixed(1)}%` },
+    grid: { top: 20, right: 20, bottom: 30, left: 50 },
+    xAxis: { type:'category', data:hours, axisLine:{lineStyle:{color:axisLine}}, axisLabel:{color:textColor,fontSize:11} },
+    yAxis: { type:'value', min:60, max:100, axisLine:{show:false}, splitLine:{lineStyle:{color:axisLine,type:'dashed'}}, axisLabel:{color:textColor,fontSize:11,formatter:'{value}%'} },
+    series: [{ type:'bar', data:dfData, itemStyle:{color:'#22c55e',borderRadius:[3,3,0,0]}, barWidth:'60%' }]
+  }), [isDark])
+
   return (
     <div className="space-y-6">
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <KPICard icon={Gauge} label="Disponibilidade Física" value={kpis.df} unit="%" trend={2.1} color="green" />
-        <KPICard icon={Target} label="Utilização Física" value={kpis.uf} unit="%" trend={-1.3} color="blue" />
-        <KPICard icon={TrendingUp} label="Produção Turno" value={`${(kpis.producaoTurno/1000).toFixed(1)}k`} unit="ton" trend={5.4} color="purple" />
-        <KPICard icon={Clock} label="Ciclos/Hora" value={kpis.ciclosHora} unit="c/h" trend={0} color="cyan" />
-        <KPICard icon={Truck} label="Operando" value={kpis.equipOperando} unit={`/${kpis.equipTotal}`} color="green" />
-        <KPICard icon={AlertTriangle} label="Alertas" value={kpis.alertasAbertos} unit="abertos" color="yellow" />
-        <KPICard icon={Zap} label="Vel. Média" value={kpis.velocidadeMedia} unit="km/h" color="orange" />
-        <KPICard icon={Fuel} label="Consumo" value="4.230" unit="L hoje" color="violet" />
-      </div>
-
-      {/* Charts row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-surface-1 border border-surface-3 rounded-xl p-5">
-          <h3 className="text-sm font-medium text-gray-400 mb-4">Produção por Hora (ton)</h3>
-          <ResponsiveContainer width="100%" height={240}>
-            <AreaChart data={prodData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#222230" />
-              <XAxis dataKey="hora" tick={{fill: '#6b7280', fontSize: 11}} />
-              <YAxis tick={{fill: '#6b7280', fontSize: 11}} />
-              <Tooltip contentStyle={{background: '#1a1a25', border: '1px solid #2a2a3a', borderRadius: 8}} />
-              <Area type="monotone" dataKey="produzido" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="meta" stroke="#6b7280" fill="none" strokeDasharray="5 5" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-          <h3 className="text-sm font-medium text-gray-400 mb-4">Status da Frota</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={statusData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={4}>
-                {statusData.map((s, i) => <Cell key={i} fill={s.color} />)}
-              </Pie>
-              <Tooltip contentStyle={{background: '#1a1a25', border: '1px solid #2a2a3a', borderRadius: 8}} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-4 mt-2">
-            {statusData.map(s => (
-              <div key={s.name} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{background: s.color}}></div>
-                <span className="text-xs text-gray-400">{s.name} ({s.value})</span>
-              </div>
-            ))}
+      {/* KPI Cards */}
+      <div className="grid grid-cols-8 gap-3">
+        {kpis.map((k,i) => (
+          <div key={i} className="bg-surface-1 border border-surface-3 rounded-xl p-4 flex flex-col items-center text-center gap-1 relative overflow-hidden">
+            <k.icon className="w-5 h-5 text-brand-400 mb-1" />
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-xl font-bold text-white">{typeof k.value==='number'?fmtNum(k.value,k.suffix==='%'||k.suffix==='c/h'?1:0):k.value}</span>
+              <span className="text-xs text-gray-500">{k.suffix}</span>
+            </div>
+            <span className="text-[10px] text-gray-500 leading-tight">{k.label}</span>
+            {k.trend && <span className={`absolute top-2 right-2 text-[10px] font-medium ${k.good?'text-green-400':'text-red-400'}`}>{k.trend}</span>}
           </div>
+        ))}
+      </div>
+
+      {/* Charts Row 1 */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2 bg-surface-1 border border-surface-3 rounded-xl p-5">
+          <h3 className="text-sm font-medium text-gray-400 mb-2">Produção por Hora (ton)</h3>
+          <ReactECharts option={prodOption} style={{height:220}} opts={{renderer:'svg'}} />
+        </div>
+        <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
+          <h3 className="text-sm font-medium text-gray-400 mb-2">Status da Frota</h3>
+          <ReactECharts option={pieOption} style={{height:220}} opts={{renderer:'svg'}} />
         </div>
       </div>
 
-      {/* Charts row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-          <h3 className="text-sm font-medium text-gray-400 mb-4">DF% por Hora</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={dfData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#222230" />
-              <XAxis dataKey="hora" tick={{fill: '#6b7280', fontSize: 11}} />
-              <YAxis domain={[60, 100]} tick={{fill: '#6b7280', fontSize: 11}} />
-              <Tooltip contentStyle={{background: '#1a1a25', border: '1px solid #2a2a3a', borderRadius: 8}} />
-              <Bar dataKey="df" fill="#22c55e" radius={[4,4,0,0]} />
-            </BarChart>
-          </ResponsiveContainer>
+      {/* Charts Row 2 */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2 bg-surface-1 border border-surface-3 rounded-xl p-5">
+          <h3 className="text-sm font-medium text-gray-400 mb-2">DF% por Hora</h3>
+          <ReactECharts option={dfOption} style={{height:200}} opts={{renderer:'svg'}} />
         </div>
         <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-          <h3 className="text-sm font-medium text-gray-400 mb-4">Equipamentos — Status Atual</h3>
-          <div className="space-y-2 max-h-[200px] overflow-y-auto">
-            {equipamentos.map(e => (
-              <div key={e.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-2">
-                <div className="w-2.5 h-2.5 rounded-full" style={{background: e.cor}}></div>
-                <span className="text-sm font-medium text-gray-200 w-16">{e.codigo}</span>
-                <span className="text-xs text-gray-500 flex-1">{e.atividade || 'Sem atividade'}</span>
-                <span className="text-xs text-gray-400">{e.operador || '—'}</span>
-                <span className="text-xs text-gray-600">{e.vel} km/h</span>
+          <h3 className="text-sm font-medium text-gray-400 mb-2">Equipamentos — Status Atual</h3>
+          <div className="space-y-2 mt-3 max-h-[180px] overflow-y-auto">
+            {equipamentos.slice(0,8).map(e => (
+              <div key={e.id} className="flex items-center gap-3 text-sm px-2 py-1.5 rounded-lg hover:bg-surface-2">
+                <span className={`w-2.5 h-2.5 rounded-full ${e.status==='OPERANDO'?'bg-green-500':e.status==='PARADO'?'bg-yellow-500':'bg-red-500'}`}></span>
+                <span className="font-mono text-brand-400 w-14 text-xs">{e.codigo}</span>
+                <span className="text-gray-300 flex-1 text-xs truncate">{e.atividade||'—'}</span>
+                <span className="text-gray-500 text-xs w-20 text-right">{e.operador?.split(' ')[0]||'—'}</span>
+                <span className="text-gray-400 text-xs font-mono w-12 text-right">{e.vel} km/h</span>
               </div>
             ))}
           </div>
