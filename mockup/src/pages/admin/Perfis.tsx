@@ -1,96 +1,87 @@
 import { useState } from 'react'
-import { Check, X } from 'lucide-react'
+import DataTable from '../../components/ui/DataTable'
+import Drawer from '../../components/ui/Drawer'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import { Input, FormSection, Switch } from '../../components/ui/FormFields'
+import { toast } from '../../components/ui/Toast'
+import { Shield } from 'lucide-react'
 
-const perfis = ['Administrador', 'Supervisor Operação', 'Operador Sala', 'Analista Manutenção', 'Gestor Qualidade']
-const modulos = [
-  { nome: 'FROTA', funcs: [
-    { nome: 'Equipamentos', acoes: ['V','C','E','D','EX'] },
-    { nome: 'Modelos', acoes: ['V','C','E','D'] },
-    { nome: 'Contratadas', acoes: ['V','C','E','D'] },
-  ]},
-  { nome: 'OPERAÇÃO', funcs: [
-    { nome: 'Dashboard', acoes: ['V'] },
-    { nome: 'Mapa', acoes: ['V'] },
-    { nome: 'Atividades Config', acoes: ['V','C','E','D'] },
-    { nome: 'Ciclos', acoes: ['V','E'] },
-    { nome: 'Alertas', acoes: ['V','C','E'] },
-    { nome: 'Mensageria', acoes: ['V','C'] },
-  ]},
-  { nome: 'MANUTENÇÃO', funcs: [
-    { nome: 'Ordens de Serviço', acoes: ['V','C','E','D','AP'] },
-    { nome: 'Planos Preventivos', acoes: ['V','C','E','D'] },
-    { nome: 'Peças', acoes: ['V','C','E','D'] },
-  ]},
-  { nome: 'ADMIN', funcs: [
-    { nome: 'Usuários', acoes: ['V','C','E','D'] },
-    { nome: 'Perfis', acoes: ['V','C','E','D'] },
-    { nome: 'Configurações', acoes: ['V','E'] },
-  ]},
+const funcs = [
+  { grupo:'Frota', items:['FROTA_EQUIPAMENTO','FROTA_MODELO','FROTA_CONTRATADA','FROTA_FABRICANTE'] },
+  { grupo:'Operação', items:['OPERACAO_ATIVIDADE','OPERACAO_CICLO','OPERACAO_ABASTECIMENTO','OPERACAO_DISPATCH'] },
+  { grupo:'Manutenção', items:['MANUTENCAO_OS','MANUTENCAO_PREVENTIVA','MANUTENCAO_PECAS'] },
+  { grupo:'Área & Rota', items:['AREA_CADASTRO','AREA_ROTA','AREA_MATERIAL'] },
+  { grupo:'Qualidade', items:['QUALIDADE_PILHA','QUALIDADE_ELEMENTO'] },
+  { grupo:'Admin', items:['ADMIN_USUARIO','ADMIN_PERFIL','ADMIN_CONFIG'] },
 ]
-
-const perms: Record<string, boolean> = {}
+const acoes = ['VER','CRIAR','EDITAR','DELETAR','EXPORTAR']
+const init = [
+  { id:1, nome:'Administrador', descricao:'Acesso total', is_admin:true, usuarios:2 },
+  { id:2, nome:'Supervisor Operação', descricao:'Gestão operacional', is_admin:false, usuarios:3 },
+  { id:3, nome:'Operador Sala', descricao:'Visualização e dispatch', is_admin:false, usuarios:2 },
+  { id:4, nome:'Analista Manutenção', descricao:'OS e planos preventivos', is_admin:false, usuarios:1 },
+  { id:5, nome:'Gestor Qualidade', descricao:'Pilhas e análises', is_admin:false, usuarios:1 },
+]
+const empty = { nome:'', descricao:'', is_admin:false }
 
 export default function Perfis() {
-  const [selectedPerfil, setSelectedPerfil] = useState('Supervisor Operação')
+  const [data, setData] = useState(init)
+  const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<any>(null)
+  const [del, setDel] = useState<any>(null)
+  const [form, setForm] = useState<any>(empty)
+  const [perms, setPerms] = useState<Record<string,string[]>>({})
+  const set = (k:string,v:any) => setForm((p:any)=>({...p,[k]:v}))
 
-  return (
-    <div className="flex gap-6 h-[calc(100vh-7rem)]">
-      <div className="w-64 bg-surface-1 border border-surface-3 rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-surface-3 flex justify-between items-center">
-          <h3 className="text-sm font-medium text-gray-300">Perfis</h3>
-          <button className="text-xs text-brand-400">+ Novo</button>
-        </div>
-        <div className="overflow-y-auto">
-          {perfis.map(p => (
-            <div key={p} onClick={() => setSelectedPerfil(p)} className={`px-4 py-3 cursor-pointer border-b border-surface-3 transition-colors ${selectedPerfil === p ? 'bg-surface-3 text-brand-400' : 'text-gray-400 hover:bg-surface-2'}`}>
-              <span className="text-sm">{p}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+  const togglePerm = (func:string, acao:string) => {
+    setPerms(p => {
+      const curr = p[func] || []
+      return {...p, [func]: curr.includes(acao) ? curr.filter(a=>a!==acao) : [...curr, acao]}
+    })
+  }
 
-      <div className="flex-1 bg-surface-1 border border-surface-3 rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-surface-3">
-          <h3 className="text-sm font-medium text-white">Permissões: {selectedPerfil}</h3>
-          <p className="text-xs text-gray-500 mt-1">Marque as ações permitidas para cada funcionalidade</p>
-        </div>
-        <div className="overflow-y-auto h-[calc(100%-5rem)] p-4">
-          {modulos.map(mod => (
-            <div key={mod.nome} className="mb-6">
-              <h4 className="text-xs font-bold text-gray-500 uppercase mb-2 pb-2 border-b border-surface-3">{mod.nome}</h4>
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <th className="text-left text-xs text-gray-600 pb-2 w-48">Funcionalidade</th>
-                    <th className="text-center text-xs text-gray-600 pb-2 w-12">V</th>
-                    <th className="text-center text-xs text-gray-600 pb-2 w-12">C</th>
-                    <th className="text-center text-xs text-gray-600 pb-2 w-12">E</th>
-                    <th className="text-center text-xs text-gray-600 pb-2 w-12">D</th>
-                    <th className="text-center text-xs text-gray-600 pb-2 w-12">EX</th>
-                    <th className="text-center text-xs text-gray-600 pb-2 w-12">AP</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mod.funcs.map(f => (
-                    <tr key={f.nome} className="hover:bg-surface-2">
-                      <td className="py-1.5 text-sm text-gray-300">{f.nome}</td>
-                      {['V','C','E','D','EX','AP'].map(a => (
-                        <td key={a} className="text-center py-1.5">
-                          {f.acoes.includes(a) ? (
-                            <button className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${Math.random() > 0.3 ? 'bg-brand-600/20 text-brand-400 border border-brand-600' : 'bg-surface-3 text-gray-600 border border-surface-4 hover:border-brand-600'}`}>
-                              {Math.random() > 0.3 ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                            </button>
-                          ) : <span className="text-gray-700">—</span>}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
-        </div>
+  const save = () => {
+    if (!form.nome) { toast('Nome obrigatório','error'); return }
+    if (editing) { setData(p=>p.map(r=>r.id===editing.id?{...r,...form}:r)); toast('Perfil atualizado') }
+    else { setData(p=>[...p,{id:Date.now(),...form,usuarios:0}]); toast('Perfil criado') }
+    setOpen(false)
+  }
+
+  const columns = [
+    { key:'nome', label:'Nome', render:(r:any)=><span className="flex items-center gap-2"><Shield className={`w-4 h-4 ${r.is_admin?'text-yellow-400':'text-gray-500'}`}/>{r.nome}</span> },
+    { key:'descricao', label:'Descrição' },
+    { key:'is_admin', label:'Admin', render:(r:any)=>r.is_admin?<span className="text-yellow-400 text-xs">★ Full</span>:<span className="text-gray-600 text-xs">Limitado</span> },
+    { key:'usuarios', label:'Usuários' },
+  ]
+
+  return (<>
+    <DataTable columns={columns} data={data} title="Perfis & Permissões" onAdd={()=>{setForm(empty);setPerms({});setEditing(null);setOpen(true)}} onEdit={(r)=>{setForm({nome:r.nome,descricao:r.descricao,is_admin:r.is_admin});setPerms({});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel="Novo Perfil" />
+    <Drawer open={open} onClose={()=>setOpen(false)} title={editing?'Editar Perfil':'Novo Perfil'} width="w-[720px]"
+      footer={<><button onClick={()=>setOpen(false)} className="px-4 py-2 bg-surface-2 border border-surface-4 rounded-lg text-sm text-gray-300">Cancelar</button><button onClick={save} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg">Salvar</button></>}>
+      <div className="space-y-6">
+        <FormSection title="Dados do Perfil">
+          <Input label="Nome" value={form.nome} onChange={v=>set('nome',v)} required placeholder="Supervisor Operação" />
+          <Input label="Descrição" value={form.descricao} onChange={v=>set('descricao',v)} placeholder="Gestão operacional" />
+          <Switch label="Acesso Administrativo Total" checked={form.is_admin} onChange={v=>set('is_admin',v)} description="Ignora matrix de permissões (acesso irrestrito)" />
+        </FormSection>
+        {!form.is_admin && <FormSection title="Matrix de Permissões">
+          <div className="border border-surface-4 rounded-lg overflow-hidden">
+            <table className="w-full text-xs">
+              <thead><tr className="bg-surface-3"><th className="px-3 py-2 text-left text-gray-500">Funcionalidade</th>{acoes.map(a=><th key={a} className="px-2 py-2 text-center text-gray-500 w-16">{a}</th>)}</tr></thead>
+              <tbody>
+                {funcs.map(g=><>
+                  <tr key={g.grupo} className="bg-surface-2"><td colSpan={6} className="px-3 py-1.5 text-gray-400 font-medium">{g.grupo}</td></tr>
+                  {g.items.map(f=><tr key={f} className="border-t border-surface-4 hover:bg-surface-2">
+                    <td className="px-3 py-1.5 text-gray-300">{f}</td>
+                    {acoes.map(a=><td key={a} className="px-2 py-1.5 text-center"><input type="checkbox" checked={perms[f]?.includes(a)||false} onChange={()=>togglePerm(f,a)} className="w-3.5 h-3.5 rounded border-gray-600 bg-surface-3 text-brand-500 focus:ring-brand-500" /></td>)}
+                  </tr>)}
+                </>)}
+              </tbody>
+            </table>
+          </div>
+        </FormSection>}
       </div>
-    </div>
-  )
+    </Drawer>
+    <ConfirmDialog open={!!del} onClose={()=>setDel(null)} onConfirm={()=>{setData(p=>p.filter(r=>r.id!==del.id));toast('Perfil removido');setDel(null)}} title="Excluir perfil?" message={`Excluir ${del?.nome}? Usuários vinculados perderão acesso.`} confirmLabel="Excluir" />
+  </>)
 }

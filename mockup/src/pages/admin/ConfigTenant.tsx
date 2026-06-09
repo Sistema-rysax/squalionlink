@@ -1,45 +1,45 @@
-import { Shield, Mail, Key, Globe } from 'lucide-react'
+import { useState } from 'react'
+import { Input, Select, FormSection, FormGrid, Switch } from '../../components/ui/FormFields'
+import { toast } from '../../components/ui/Toast'
+import { Building2 } from 'lucide-react'
+
 export default function ConfigTenant() {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-        <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-4"><Shield className="w-4 h-4 text-brand-400" /> Política de Senha</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Mínimo de caracteres</span><span className="text-sm text-white bg-surface-2 px-3 py-1 rounded">8</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Requer maiúscula</span><span className="text-xs text-green-400">✓ Sim</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Requer número</span><span className="text-xs text-green-400">✓ Sim</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Requer especial</span><span className="text-xs text-gray-500">✗ Não</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Expira em</span><span className="text-sm text-white">Nunca</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Tentativas antes de bloquear</span><span className="text-sm text-white">5</span></div>
-        </div>
-      </div>
-      <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-        <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-4"><Key className="w-4 h-4 text-brand-400" /> MFA (Multi-Factor)</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">MFA obrigatório</span><span className="text-xs text-yellow-400">Não (recomendado)</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Tipos permitidos</span><span className="text-xs text-gray-300">TOTP, Email</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Usuários com MFA</span><span className="text-sm text-white">3/5 (60%)</span></div>
-        </div>
-      </div>
-      <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-        <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-4"><Globe className="w-4 h-4 text-brand-400" /> SSO — Microsoft Entra ID</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Status</span><span className="px-2 py-0.5 bg-green-900/30 text-green-400 rounded text-xs">Configurado</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Tenant ID</span><span className="text-xs text-gray-300 font-mono">a1b2c3d4-...</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Auto-provisionar</span><span className="text-xs text-green-400">✓ Ativo</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Domínio</span><span className="text-xs text-gray-300">@mineradoraabc.com</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Perfil padrão</span><span className="text-xs text-gray-300">Operador Sala</span></div>
-        </div>
-      </div>
-      <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-        <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-4"><Mail className="w-4 h-4 text-brand-400" /> Email</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Provider</span><span className="text-sm text-white">AWS SES</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">From</span><span className="text-xs text-gray-300">no-reply@squalionlink.com</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Enviados hoje</span><span className="text-sm text-white">12</span></div>
-          <div className="flex justify-between items-center"><span className="text-sm text-gray-400">Fila</span><span className="text-sm text-green-400">0 pendentes</span></div>
-        </div>
-      </div>
+  const [form, setForm] = useState({ nome:'Mineradora ABC', razao:'Mineradora ABC S.A.', cnpj:'12.345.678/0001-90', plano:'ENTERPRISE', timezone:'America/Sao_Paulo', idioma_padrao:'pt-BR', mfa_obrigatorio:true, sessao_timeout:'480', logo_url:'' })
+  const set = (k:string,v:any) => setForm((p:any)=>({...p,[k]:v}))
+
+  return (<div className="max-w-3xl space-y-6">
+    <h1 className="text-xl font-semibold text-white flex items-center gap-2"><Building2 className="w-5 h-5"/>Configurações do Tenant</h1>
+
+    <div className="bg-surface-1 border border-surface-3 rounded-xl p-6 space-y-5">
+      <FormSection title="Dados da Empresa">
+        <Input label="Nome Fantasia" value={form.nome} onChange={v=>set('nome',v)} />
+        <Input label="Razão Social" value={form.razao} onChange={v=>set('razao',v)} />
+        <FormGrid><Input label="CNPJ" value={form.cnpj} onChange={v=>set('cnpj',v)} disabled /><Select label="Plano" value={form.plano} onChange={v=>set('plano',v)} options={[{value:'BASIC',label:'🥉 Basic'},{value:'PROFESSIONAL',label:'🥈 Professional'},{value:'ENTERPRISE',label:'🥇 Enterprise'}]} /></FormGrid>
+      </FormSection>
     </div>
-  )
+
+    <div className="bg-surface-1 border border-surface-3 rounded-xl p-6 space-y-5">
+      <FormSection title="Localização & Idioma">
+        <FormGrid>
+          <Select label="Timezone" value={form.timezone} onChange={v=>set('timezone',v)} options={[{value:'America/Sao_Paulo',label:'Brasília (UTC-3)'},{value:'America/Manaus',label:'Manaus (UTC-4)'},{value:'America/Belem',label:'Belém (UTC-3)'},{value:'UTC',label:'UTC'}]} />
+          <Select label="Idioma Padrão" value={form.idioma_padrao} onChange={v=>set('idioma_padrao',v)} options={[{value:'pt-BR',label:'Português'},{value:'en',label:'English'},{value:'es',label:'Español'}]} />
+        </FormGrid>
+      </FormSection>
+    </div>
+
+    <div className="bg-surface-1 border border-surface-3 rounded-xl p-6 space-y-5">
+      <FormSection title="Segurança">
+        <Switch label="MFA Obrigatório para todos" checked={form.mfa_obrigatorio} onChange={v=>set('mfa_obrigatorio',v)} description="Todos os usuários serão obrigados a ativar 2FA" />
+        <Input label="Timeout de Sessão (minutos)" value={form.sessao_timeout} onChange={v=>set('sessao_timeout',v)} type="number" helper="Após inatividade, desconecta o usuário" />
+      </FormSection>
+    </div>
+
+    <div className="bg-surface-1 border border-surface-3 rounded-xl p-6 space-y-5">
+      <FormSection title="Aparência">
+        <Input label="URL do Logo" value={form.logo_url} onChange={v=>set('logo_url',v)} placeholder="https://..." helper="PNG ou SVG. Exibido no topbar e relatórios." />
+      </FormSection>
+    </div>
+
+    <button onClick={()=>toast('Configurações salvas')} className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg">Salvar</button>
+  </div>)
 }

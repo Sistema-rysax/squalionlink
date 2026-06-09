@@ -1,43 +1,59 @@
-import { equipamentos, abastecimentos } from '../../mock/data'
+import { useState } from 'react'
 import DataTable from '../../components/ui/DataTable'
-import { Fuel } from 'lucide-react'
+import Drawer from '../../components/ui/Drawer'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import { Input, Select, FormSection, FormGrid } from '../../components/ui/FormFields'
+import { toast } from '../../components/ui/Toast'
+import { abastecimentos as init } from '../../mock/data'
+
+const empty = { equip:'', litros:'', operador:'', posto:'', combustivel:'Diesel S10', horimetro:'', odometro:'', dt:'' }
 
 export default function Abastecimento() {
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-4"><p className="text-xs text-gray-500">Litros hoje</p><p className="text-xl font-bold text-white">4.230 L</p></div>
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-4"><p className="text-xs text-gray-500">Consumo médio</p><p className="text-xl font-bold text-white">62.4 L/h</p></div>
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-4"><p className="text-xs text-gray-500">L/ton média</p><p className="text-xl font-bold text-white">2.1</p></div>
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-4"><p className="text-xs text-gray-500">Alerta (&lt; 20%)</p><p className="text-xl font-bold text-yellow-400">3</p></div>
-        <div className="bg-surface-1 border border-surface-3 rounded-xl p-4"><p className="text-xs text-gray-500">Crítico (&lt; 10%)</p><p className="text-xl font-bold text-red-400">1</p></div>
-      </div>
+  const [data, setData] = useState(init)
+  const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<any>(null)
+  const [del, setDel] = useState<any>(null)
+  const [form, setForm] = useState(empty)
+  const set = (k:string,v:string) => setForm(p=>({...p,[k]:v}))
 
-      <div className="bg-surface-1 border border-surface-3 rounded-xl p-5">
-        <h3 className="text-sm font-medium text-gray-400 mb-4 flex items-center gap-2"><Fuel className="w-4 h-4" /> Nível do Tanque — Frota</h3>
-        <div className="space-y-3">
-          {equipamentos.map(e => (
-            <div key={e.id} className="flex items-center gap-3">
-              <span className="w-14 text-xs text-gray-400 font-medium">{e.codigo}</span>
-              <div className="flex-1 h-4 bg-surface-3 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full transition-all ${e.tanque > 30 ? 'bg-green-500' : e.tanque > 15 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{width: `${e.tanque}%`}}></div>
-              </div>
-              <span className={`w-10 text-xs text-right font-medium ${e.tanque > 30 ? 'text-green-400' : e.tanque > 15 ? 'text-yellow-400' : 'text-red-400'}`}>{e.tanque}%</span>
-              <span className="w-16 text-xs text-gray-600">~{(e.tanque * 0.08).toFixed(1)}h</span>
-            </div>
-          ))}
-        </div>
-      </div>
+  const save = () => {
+    if (!form.equip||!form.litros||!form.combustivel) { toast('Campos obrigatórios','error'); return }
+    if (+form.litros<=0) { toast('Litros deve ser > 0','error'); return }
+    if (editing) { setData(p=>p.map(r=>r.id===editing.id?{...r,...form,litros:+form.litros,horimetro:+form.horimetro}:r)); toast('Abastecimento atualizado') }
+    else { setData(p=>[...p,{id:Date.now(),...form,litros:+form.litros,horimetro:+form.horimetro,dt:form.dt||new Date().toISOString()}]); toast('Abastecimento registrado') }
+    setOpen(false)
+  }
 
-      <DataTable columns={[
-        { key: 'dt', label: 'Data/Hora', render: (r: any) => new Date(r.dt).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) },
-        { key: 'equip', label: 'Equipamento' },
-        { key: 'litros', label: 'Litros', render: (r: any) => <span className="font-medium">{r.litros} L</span> },
-        { key: 'operador', label: 'Operador' },
-        { key: 'posto', label: 'Posto' },
-        { key: 'combustivel', label: 'Combustível' },
-        { key: 'horimetro', label: 'Horímetro', render: (r: any) => `${r.horimetro}h` },
-      ]} data={abastecimentos} title="Últimos Abastecimentos" onAdd={() => {}} addLabel="Registrar" />
-    </div>
-  )
+  const columns = [
+    { key:'equip', label:'Equipamento', render:(r:any)=><span className="font-medium text-brand-400">{r.equip}</span> },
+    { key:'litros', label:'Litros', render:(r:any)=><span className="font-mono">{r.litros} L</span> },
+    { key:'combustivel', label:'Combustível' },
+    { key:'posto', label:'Posto' },
+    { key:'operador', label:'Operador' },
+    { key:'horimetro', label:'Horímetro', render:(r:any)=>r.horimetro?r.horimetro+'h':'—' },
+    { key:'dt', label:'Data/Hora', render:(r:any)=>new Date(r.dt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) },
+  ]
+
+  return (<>
+    <DataTable columns={columns} data={data} title="Registros de Abastecimento" onAdd={()=>{setForm(empty);setEditing(null);setOpen(true)}} onEdit={(r)=>{setForm({equip:r.equip,litros:String(r.litros),operador:r.operador,posto:r.posto,combustivel:r.combustivel,horimetro:String(r.horimetro||''),odometro:'',dt:''});setEditing(r);setOpen(true)}} onDelete={setDel} addLabel="Novo Abastecimento" />
+    <Drawer open={open} onClose={()=>setOpen(false)} title={editing?'Editar Abastecimento':'Registrar Abastecimento'}
+      footer={<><button onClick={()=>setOpen(false)} className="px-4 py-2 bg-surface-2 border border-surface-4 rounded-lg text-sm text-gray-300">Cancelar</button><button onClick={save} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg">Salvar</button></>}>
+      <div className="space-y-6">
+        <FormSection title="Registro">
+          <Select label="Equipamento" value={form.equip} onChange={v=>set('equip',v)} required options={[{value:'CAT-01',label:'CAT-01'},{value:'CAT-02',label:'CAT-02'},{value:'CAT-03',label:'CAT-03'},{value:'CAT-04',label:'CAT-04'},{value:'CAT-05',label:'CAT-05'},{value:'ESC-01',label:'ESC-01'},{value:'MOT-01',label:'MOT-01'}]} />
+          <FormGrid>
+            <Input label="Litros" value={form.litros} onChange={v=>set('litros',v)} type="number" required placeholder="620" />
+            <Select label="Combustível" value={form.combustivel} onChange={v=>set('combustivel',v)} required onAdd={()=>toast('Criar combustível','info')} options={[{value:'Diesel S10',label:'Diesel S10'},{value:'Diesel S500',label:'Diesel S500'},{value:'Arla 32',label:'Arla 32'}]} />
+          </FormGrid>
+          <Select label="Posto" value={form.posto} onChange={v=>set('posto',v)} onAdd={()=>toast('Criar posto','info')} options={[{value:'Central',label:'Central'},{value:'Comboio 01',label:'Comboio 01'},{value:'Comboio 02',label:'Comboio 02'},{value:'Posto Norte',label:'Posto Norte'}]} />
+          <Select label="Operador" value={form.operador} onChange={v=>set('operador',v)} options={[{value:'João Silva',label:'João Silva'},{value:'Carlos Santos',label:'Carlos Santos'},{value:'Pedro Costa',label:'Pedro Costa'},{value:'Maria Souza',label:'Maria Souza'}]} />
+        </FormSection>
+        <FormSection title="Contadores (momento)">
+          <FormGrid><Input label="Horímetro" value={form.horimetro} onChange={v=>set('horimetro',v)} type="number" placeholder="12440" helper="Auto-preenchido pelo GPS" /><Input label="Odômetro" value={form.odometro} onChange={v=>set('odometro',v)} type="number" placeholder="84230" /></FormGrid>
+          <Input label="Data/Hora" value={form.dt} onChange={v=>set('dt',v)} type="datetime-local" helper="Vazio = agora" />
+        </FormSection>
+      </div>
+    </Drawer>
+    <ConfirmDialog open={!!del} onClose={()=>setDel(null)} onConfirm={()=>{setData(p=>p.filter(r=>r.id!==del.id));toast('Abastecimento removido');setDel(null)}} title="Excluir registro?" message="Excluir este abastecimento?" confirmLabel="Excluir" />
+  </>)
 }
