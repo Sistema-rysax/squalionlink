@@ -12,9 +12,11 @@ Este documento detalha três adições críticas ao sistema:
 
 ## 1. Hardware
 
-### Conceito
+> ⚠️ **MOVIDO**: A gestão completa de hardware (patrimonial, movimentação entre clientes, manutenção de devices) está em **HARDWARE-GESTAO.md**. Este capítulo mantém apenas o resumo de integração.
 
-Todo equipamento pode ter **N dispositivos** instalados simultaneamente. O sistema precisa rastrear quais devices estão em cada equipamento, se estão comunicando, e manter histórico de trocas.
+### Conceito (ver HARDWARE-GESTAO.md para detalhes)
+
+Hardware é ativo da PLATAFORMA, não do tenant. A plataforma distribui dispositivos entre clientes e rastreia todo o ciclo de vida. Cada equipamento pode ter N dispositivos instalados simultaneamente.
 
 **Setup típico em mineração:**
 
